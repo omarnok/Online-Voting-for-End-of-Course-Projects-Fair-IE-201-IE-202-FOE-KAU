@@ -257,8 +257,18 @@
         .project-name {
             font-size: 1.3em;
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             font-weight: 600;
+        }
+
+        .instructor-name {
+            color: #e67e22;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .vote-btn {
@@ -323,6 +333,13 @@
             margin-bottom: 10px;
         }
 
+        .winner-card .instructor {
+            font-size: 1.1em;
+            opacity: 0.95;
+            margin: 8px 0;
+            color: #ffd700;
+        }
+
         .members-list {
             background: rgba(255,255,255,0.1);
             padding: 20px;
@@ -340,7 +357,7 @@
 
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 20px;
             margin-top: 30px;
         }
@@ -355,22 +372,104 @@
         .result-category h4 {
             color: #667eea;
             margin-bottom: 15px;
+            font-size: 1.3em;
         }
 
         .result-item {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e0e0e0;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #e0e0e0;
         }
 
         .result-item.winner {
-            background: #d4edda;
-            margin: 5px -10px;
-            padding: 10px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 2px solid #27ae60;
             font-weight: bold;
-            color: #155724;
+        }
+
+        .result-item.second {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+            border: 2px solid #f39c12;
+        }
+
+        .result-item.third {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border: 2px solid #e74c3c;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .rank-1 {
+            background: #ffd700;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
+        }
+
+        .rank-2 {
+            background: #c0c0c0;
+            color: #333;
+        }
+
+        .rank-3 {
+            background: #cd7f32;
+            color: white;
+        }
+
+        .rank-other {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .result-info {
+            flex: 1;
+        }
+
+        .result-info .project-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .result-info .project-meta {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .result-info .instructor {
+            font-size: 13px;
+            color: #e67e22;
+            font-weight: 600;
+        }
+
+        .result-votes {
+            text-align: right;
+        }
+
+        .result-votes .vote-number {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .result-votes .vote-label {
+            font-size: 12px;
+            color: #999;
         }
 
         .share-buttons {
@@ -567,6 +666,15 @@
             header h1 {
                 font-size: 1.8em;
             }
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .result-votes {
+                text-align: left;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -624,7 +732,7 @@
         <!-- Setup Section -->
         <div class="card hidden" id="setupSection">
             <h2>⚙️ Project Setup</h2>
-            <p style="margin-bottom: 20px; color: #666;">Add projects to each category. Only configured projects will appear for voting.</p>
+            <p style="margin-bottom: 20px; color: #666;">Add projects to each category. Only configured projects will appear for voting. Team number can include letters (e.g., A, B, Alpha).</p>
             <div class="setup-grid" id="setupGrid"></div>
             <button class="btn btn-success" style="width: 100%; margin-top: 20px;" onclick="saveSetup()">💾 Save All Projects</button>
         </div>
@@ -678,7 +786,7 @@
         <!-- Results Section -->
         <div class="results-section" id="resultsSection">
             <h2 style="text-align: center; margin-bottom: 10px; color: #333; font-size: 2em;">🏆 Final Results</h2>
-            <p style="text-align: center; color: #666; margin-bottom: 30px;">Winners announcement</p>
+            <p style="text-align: center; color: #666; margin-bottom: 30px;">Ranked winners announcement</p>
             
             <div id="winnersContainer"></div>
             
@@ -697,7 +805,7 @@
                 </div>
                 <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd;">
                     <label style="font-weight: bold; display: block; margin-bottom: 10px;">Or copy results text:</label>
-                    <textarea id="resultsText" style="width: 100%; height: 200px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 14px;" readonly></textarea>
+                    <textarea id="resultsText" style="width: 100%; height: 250px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 14px;" readonly></textarea>
                     <button class="btn btn-primary" style="margin-top: 10px;" onclick="copyResults()">📋 Copy to Clipboard</button>
                 </div>
             </div>
@@ -744,20 +852,17 @@
         function init() {
             loadData();
             
-            // Initialize empty projects structure if needed
             CATEGORIES.forEach(cat => {
                 if (!projects[cat]) projects[cat] = [];
                 if (!votes[cat]) votes[cat] = {};
             });
             
-            // Load current voter
             const savedVoter = localStorage.getItem('currentVoter');
             if (savedVoter) {
                 currentVoter = JSON.parse(savedVoter);
                 showVoterInfo();
             }
             
-            // Check voting status
             const votingStatus = localStorage.getItem('votingStatus');
             if (votingStatus === 'stopped') {
                 isVotingActive = false;
@@ -800,7 +905,6 @@
                 return;
             }
             
-            // Check if already registered
             const existing = voters.find(v => v.universityId === id);
             if (existing) {
                 showModal('Already Registered', 'This university ID is already registered. Please use a different ID or contact admin.');
@@ -908,8 +1012,7 @@
             grid.innerHTML = '';
             const catProjects = projects[category] || [];
             
-            // Only show projects that have been configured (have names)
-            const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '' && p.name !== `Project ${p.team}`);
+            const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '');
             
             if (activeProjects.length === 0) {
                 grid.innerHTML = `
@@ -950,6 +1053,7 @@
                 <div class="project-info">
                     <span class="project-id">${project.id}</span>
                     <h3 class="project-name">${project.name}</h3>
+                    <div class="instructor-name">👨‍🏫 Instructor: ${project.instructor || 'Not specified'}</div>
                     <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
                         Section ${project.section}, Team ${project.team}
                     </p>
@@ -993,14 +1097,11 @@
                 return;
             }
             
-            // Record vote
             if (!votes[category]) votes[category] = {};
             votes[category][projectId] = (votes[category][projectId] || 0) + 1;
             
-            // Mark as voted
             localStorage.setItem(voteKey, projectId);
             
-            // Track voter participation
             if (!currentVoter.votedCategories) currentVoter.votedCategories = [];
             currentVoter.votedCategories.push(category);
             saveData();
@@ -1029,7 +1130,6 @@
                 const container = div.querySelector(`#projects-${cat}`);
                 const catProjects = projects[cat] || [];
                 
-                // Always show at least 5 slots, or existing projects
                 const displayCount = Math.max(catProjects.length, 5);
                 
                 for (let i = 0; i < displayCount; i++) {
@@ -1038,7 +1138,8 @@
                         name: '',
                         category: cat,
                         section: 1,
-                        team: i+1,
+                        team: String(i+1),
+                        instructor: '',
                         image: null,
                         members: [{name: '', id: ''}]
                     };
@@ -1062,12 +1163,16 @@
                     <input type="text" id="name-${category}-${index}" value="${project.name}" placeholder="Enter project name">
                 </div>
                 <div class="form-group">
+                    <label>Instructor Name *</label>
+                    <input type="text" id="instructor-${category}-${index}" value="${project.instructor || ''}" placeholder="Enter instructor name">
+                </div>
+                <div class="form-group">
                     <label>Section Number</label>
                     <input type="number" id="sec-${category}-${index}" value="${project.section}" min="1">
                 </div>
                 <div class="form-group">
-                    <label>Team Number</label>
-                    <input type="number" id="team-${category}-${index}" value="${project.team}" min="1">
+                    <label>Team Number / Name</label>
+                    <input type="text" id="team-${category}-${index}" value="${project.team}" placeholder="e.g., 1, A, Alpha, Team-1">
                 </div>
                 <div class="form-group">
                     <label>Project Image</label>
@@ -1127,7 +1232,8 @@
                 name: '',
                 category: category,
                 section: 1,
-                team: idx+1,
+                team: String(idx+1),
+                instructor: '',
                 image: null,
                 members: [{name: '', id: ''}]
             };
@@ -1142,11 +1248,11 @@
                 items.forEach((item, idx) => {
                     const name = document.getElementById(`name-${cat}-${idx}`)?.value.trim();
                     
-                    // Skip empty projects
                     if (!name) return;
                     
+                    const instructor = document.getElementById(`instructor-${cat}-${idx}`)?.value.trim() || 'Not specified';
                     const section = parseInt(document.getElementById(`sec-${cat}-${idx}`)?.value) || 1;
-                    const team = parseInt(document.getElementById(`team-${cat}-${idx}`?.value)) || (idx+1);
+                    const team = document.getElementById(`team-${cat}-${idx}`)?.value.trim() || String(idx+1);
                     const preview = document.getElementById(`preview-${cat}-${idx}`);
                     const image = preview?.classList.contains('active') ? preview.src : null;
                     
@@ -1166,6 +1272,7 @@
                     catProjects.push({
                         id: `${cat}-SEC${section}-TEAM${team}`,
                         name,
+                        instructor,
                         category: cat,
                         section,
                         team,
@@ -1176,7 +1283,6 @@
                 
                 projects[cat] = catProjects;
                 
-                // Initialize votes for new projects
                 if (!votes[cat]) votes[cat] = {};
                 catProjects.forEach(p => {
                     if (!(p.id in votes[cat])) votes[cat][p.id] = 0;
@@ -1190,7 +1296,28 @@
             showModal('Success!', 'Projects saved! Only configured projects will appear for voting.');
         }
 
-        // Results and Sharing
+        // Results and Ranking
+        function getRankSuffix(rank) {
+            if (rank === 1) return '1st';
+            if (rank === 2) return '2nd';
+            if (rank === 3) return '3rd';
+            return `${rank}th`;
+        }
+
+        function getRankClass(rank) {
+            if (rank === 1) return 'winner';
+            if (rank === 2) return 'second';
+            if (rank === 3) return 'third';
+            return '';
+        }
+
+        function getRankBadgeClass(rank) {
+            if (rank === 1) return 'rank-1';
+            if (rank === 2) return 'rank-2';
+            if (rank === 3) return 'rank-3';
+            return 'rank-other';
+        }
+
         function showResults() {
             const container = document.getElementById('winnersContainer');
             const fullResults = document.getElementById('fullResults');
@@ -1206,36 +1333,34 @@
                 const catProjects = projects[cat] || [];
                 const catVotes = votes[cat] || {};
                 
-                // Only consider configured projects
                 const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '');
                 
                 if (activeProjects.length === 0) return;
                 
-                // Find winner
-                let winner = null;
-                let maxVotes = -1;
+                // Sort by votes descending
+                const sorted = [...activeProjects].sort((a, b) => 
+                    (catVotes[b.id] || 0) - (catVotes[a.id] || 0)
+                );
                 
-                activeProjects.forEach(p => {
-                    const v = catVotes[p.id] || 0;
-                    if (v > maxVotes) {
-                        maxVotes = v;
-                        winner = p;
-                    }
-                });
+                // Find winner (1st place)
+                const winner = sorted[0];
+                const maxVotes = catVotes[winner.id] || 0;
                 
                 resultsText += `\n📊 ${CATEGORY_NAMES[cat]}\n`;
-                resultsText += `${'='.repeat(40)}\n`;
+                resultsText += `${'='.repeat(50)}\n`;
                 
-                // Display winner
+                // Display winner card
                 if (winner) {
                     const winnerCard = document.createElement('div');
                     winnerCard.className = 'winner-card';
                     winnerCard.innerHTML = `
-                        <h3>🏆 ${CATEGORY_NAMES[cat]} Winner</h3>
-                        <div style="font-size: 1.3em; margin: 10px 0;">
+                        <div style="font-size: 3em; margin-bottom: 10px;">🥇</div>
+                        <h3>${CATEGORY_NAMES[cat]} Winner</h3>
+                        <div style="font-size: 1.4em; margin: 10px 0;">
                             <strong>${winner.name}</strong>
                         </div>
-                        <div style="opacity: 0.9;">
+                        <div class="instructor">👨‍🏫 Instructor: ${winner.instructor || 'Not specified'}</div>
+                        <div style="opacity: 0.9; margin: 5px 0;">
                             ${winner.id}<br>
                             Section ${winner.section}, Team ${winner.team}
                         </div>
@@ -1248,58 +1373,66 @@
                                 </div>
                             `).join('')}
                         </div>
-                        <div style="margin-top: 20px; font-size: 1.5em;">
+                        <div style="margin-top: 20px; font-size: 1.6em; font-weight: bold;">
                             🗳️ ${maxVotes} votes
                         </div>
                     `;
                     container.appendChild(winnerCard);
                     
-                    resultsText += `🥇 WINNER: ${winner.name}\n`;
+                    resultsText += `🥇 1st PLACE: ${winner.name}\n`;
+                    resultsText += `   Instructor: ${winner.instructor || 'N/A'}\n`;
                     resultsText += `   ID: ${winner.id}\n`;
                     resultsText += `   Votes: ${maxVotes}\n`;
                     resultsText += `   Members:\n`;
                     winner.members.forEach(m => {
                         resultsText += `   - ${m.name} (${m.id})\n`;
                     });
+                    resultsText += `\n`;
                 }
                 
-                // Full results for category
+                // Full ranked results for category
                 const resultDiv = document.createElement('div');
                 resultDiv.className = 'result-category';
                 
-                const sorted = [...activeProjects].sort((a, b) => 
-                    (catVotes[b.id] || 0) - (catVotes[a.id] || 0)
-                );
-                
                 const totalCatVotes = Object.values(catVotes).reduce((a, b) => a + b, 0);
                 
-                resultDiv.innerHTML = `
-                    <h4>${CATEGORY_NAMES[cat]}</h4>
-                    ${sorted.map((p, idx) => {
-                        const v = catVotes[p.id] || 0;
-                        const pct = totalCatVotes > 0 ? (v / totalCatVotes * 100).toFixed(1) : 0;
-                        return `
-                            <div class="result-item ${idx === 0 ? 'winner' : ''}">
-                                <div>
-                                    <strong>${p.name}</strong><br>
-                                    <small>${p.id}</small>
-                                </div>
-                                <div style="text-align: right;">
-                                    <strong>${v} votes</strong><br>
-                                    <small>${pct}%</small>
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                `;
-                fullResults.appendChild(resultDiv);
+                let resultsHtml = `<h4>📋 ${CATEGORY_NAMES[cat]} - Full Rankings</h4>`;
                 
-                resultsText += `\nAll Results:\n`;
                 sorted.forEach((p, idx) => {
                     const v = catVotes[p.id] || 0;
-                    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx+1}.`;
-                    resultsText += `${medal} ${p.name}: ${v} votes\n`;
+                    const pct = totalCatVotes > 0 ? (v / totalCatVotes * 100).toFixed(1) : 0;
+                    const rank = idx + 1;
+                    const rankSuffix = getRankSuffix(rank);
+                    const rankClass = getRankClass(rank);
+                    const badgeClass = getRankBadgeClass(rank);
+                    
+                    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+                    
+                    resultsHtml += `
+                        <div class="result-item ${rankClass}">
+                            <div style="display: flex; align-items: center; flex: 1;">
+                                <span class="rank-badge ${badgeClass}">${rankSuffix}</span>
+                                <div class="result-info">
+                                    <div class="project-title">${medal} ${p.name}</div>
+                                    <div class="project-meta">${p.id} | Section ${p.section}, Team ${p.team}</div>
+                                    <div class="instructor">👨‍🏫 ${p.instructor || 'Not specified'}</div>
+                                </div>
+                            </div>
+                            <div class="result-votes">
+                                <div class="vote-number">${v}</div>
+                                <div class="vote-label">${pct}%</div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    if (rank > 1) {
+                        resultsText += `${medal} ${rankSuffix}: ${p.name} (${v} votes, ${pct}%)\n`;
+                        resultsText += `   Instructor: ${p.instructor || 'N/A'}\n`;
+                    }
                 });
+                
+                resultDiv.innerHTML = resultsHtml;
+                fullResults.appendChild(resultDiv);
             });
             
             document.getElementById('resultsText').value = resultsText;
@@ -1327,7 +1460,6 @@
         function shareWhatsApp() {
             const text = document.getElementById('resultsText').value;
             const encoded = encodeURIComponent(text);
-            // Try WhatsApp Web first, fallback to API
             window.open(`https://web.whatsapp.com/send?text=${encoded}`, '_blank');
         }
 
@@ -1393,7 +1525,7 @@
             
             CATEGORIES.forEach(cat => {
                 const catProjects = projects[cat] || [];
-                const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '' && p.name !== `Project ${p.team}`);
+                const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '');
                 totalProjects += activeProjects.length;
                 
                 totalVotes += Object.values(votes[cat] || {}).reduce((a, b) => a + b, 0);
@@ -1410,7 +1542,6 @@
                 localStorage.removeItem('votingStatus');
                 localStorage.removeItem('currentVoter');
                 
-                // Clear all vote tracking
                 for (let i = localStorage.length - 1; i >= 0; i--) {
                     const key = localStorage.key(i);
                     if (key && key.startsWith('voted_')) {
@@ -1438,7 +1569,6 @@
                 document.getElementById('votersListSection').classList.add('hidden');
                 document.getElementById('setupSection').classList.add('hidden');
                 
-                // Reset voter UI
                 document.getElementById('registrationForm').classList.remove('hidden');
                 document.getElementById('voterInfo').classList.add('hidden');
                 
@@ -1458,7 +1588,6 @@
             document.getElementById('messageModal').classList.remove('active');
         }
 
-        // Close modal on outside click
         document.getElementById('messageModal').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });
