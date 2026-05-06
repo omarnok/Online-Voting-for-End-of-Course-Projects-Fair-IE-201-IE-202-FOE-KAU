@@ -319,40 +319,112 @@
             display: block;
         }
 
+        /* Winner Card Styling */
         .winner-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
-            border-radius: 15px;
+            padding: 40px;
+            border-radius: 20px;
             margin-bottom: 30px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
         }
 
-        .winner-card h3 {
-            font-size: 2em;
+        .winner-card::before {
+            content: '👑';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 50px;
+            opacity: 0.3;
+        }
+
+        .winner-card .category-title {
+            font-size: 1.1em;
+            opacity: 0.9;
             margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .winner-card .project-title {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
         .winner-card .instructor {
-            font-size: 1.1em;
-            opacity: 0.95;
-            margin: 8px 0;
+            font-size: 1.3em;
             color: #ffd700;
+            margin-bottom: 20px;
+            font-weight: 600;
         }
 
-        .members-list {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 10px;
+        .winner-card .team-meta {
+            font-size: 1em;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+
+        .winner-card .members-section {
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            padding: 25px;
             margin-top: 20px;
             text-align: left;
+            backdrop-filter: blur(10px);
         }
 
-        .member-item {
+        .winner-card .members-section h4 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+
+        .winner-card .member-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .winner-card .member-row:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+
+        .winner-card .member-name {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .winner-card .member-id {
+            font-family: 'Courier New', monospace;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .winner-card .vote-count {
+            margin-top: 25px;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .winner-card .vote-count span {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 25px;
+            border-radius: 30px;
         }
 
         .results-grid {
@@ -389,7 +461,6 @@
         .result-item.winner {
             background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             border: 2px solid #27ae60;
-            font-weight: bold;
         }
 
         .result-item.second {
@@ -666,6 +737,14 @@
             header h1 {
                 font-size: 1.8em;
             }
+            .winner-card .project-title {
+                font-size: 1.6em;
+            }
+            .winner-card .member-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
             .result-item {
                 flex-direction: column;
                 align-items: flex-start;
@@ -732,7 +811,7 @@
         <!-- Setup Section -->
         <div class="card hidden" id="setupSection">
             <h2>⚙️ Project Setup</h2>
-            <p style="margin-bottom: 20px; color: #666;">Add projects to each category. Only configured projects will appear for voting. Team number can include letters (e.g., A, B, Alpha).</p>
+            <p style="margin-bottom: 20px; color: #666;">Add projects to each category. Section and Team numbers can include letters (e.g., Section "A1", Team "5"). Only configured projects will appear for voting.</p>
             <div class="setup-grid" id="setupGrid"></div>
             <button class="btn btn-success" style="width: 100%; margin-top: 20px;" onclick="saveSetup()">💾 Save All Projects</button>
         </div>
@@ -1134,11 +1213,11 @@
                 
                 for (let i = 0; i < displayCount; i++) {
                     const p = catProjects[i] || {
-                        id: `${cat}-SEC1-TEAM${i+1}`,
+                        id: `${cat}-SEC1-TEAM1`,
                         name: '',
                         category: cat,
-                        section: 1,
-                        team: String(i+1),
+                        section: '1',
+                        team: '1',
                         instructor: '',
                         image: null,
                         members: [{name: '', id: ''}]
@@ -1167,12 +1246,12 @@
                     <input type="text" id="instructor-${category}-${index}" value="${project.instructor || ''}" placeholder="Enter instructor name">
                 </div>
                 <div class="form-group">
-                    <label>Section Number</label>
-                    <input type="number" id="sec-${category}-${index}" value="${project.section}" min="1">
+                    <label>Section Number / Name</label>
+                    <input type="text" id="sec-${category}-${index}" value="${project.section}" placeholder="e.g., 1, A, A1, Alpha">
                 </div>
                 <div class="form-group">
-                    <label>Team Number / Name</label>
-                    <input type="text" id="team-${category}-${index}" value="${project.team}" placeholder="e.g., 1, A, Alpha, Team-1">
+                    <label>Team Number</label>
+                    <input type="number" id="team-${category}-${index}" value="${project.team}" min="1" placeholder="e.g., 1, 2, 3">
                 </div>
                 <div class="form-group">
                     <label>Project Image</label>
@@ -1228,11 +1307,11 @@
             const container = document.getElementById(`projects-${category}`);
             const idx = container.children.length;
             const newProject = {
-                id: `${category}-SEC1-TEAM${idx+1}`,
+                id: `${category}-SEC1-TEAM1`,
                 name: '',
                 category: category,
-                section: 1,
-                team: String(idx+1),
+                section: '1',
+                team: '1',
                 instructor: '',
                 image: null,
                 members: [{name: '', id: ''}]
@@ -1251,8 +1330,8 @@
                     if (!name) return;
                     
                     const instructor = document.getElementById(`instructor-${cat}-${idx}`)?.value.trim() || 'Not specified';
-                    const section = parseInt(document.getElementById(`sec-${cat}-${idx}`)?.value) || 1;
-                    const team = document.getElementById(`team-${cat}-${idx}`)?.value.trim() || String(idx+1);
+                    const section = document.getElementById(`sec-${cat}-${idx}`)?.value.trim() || '1';
+                    const team = document.getElementById(`team-${cat}-${idx}`)?.value.trim() || '1';
                     const preview = document.getElementById(`preview-${cat}-${idx}`);
                     const image = preview?.classList.contains('active') ? preview.src : null;
                     
@@ -1349,41 +1428,37 @@
                 resultsText += `\n📊 ${CATEGORY_NAMES[cat]}\n`;
                 resultsText += `${'='.repeat(50)}\n`;
                 
-                // Display winner card
+                // Display winner card with prominent project name, instructor, and members
                 if (winner) {
                     const winnerCard = document.createElement('div');
                     winnerCard.className = 'winner-card';
                     winnerCard.innerHTML = `
-                        <div style="font-size: 3em; margin-bottom: 10px;">🥇</div>
-                        <h3>${CATEGORY_NAMES[cat]} Winner</h3>
-                        <div style="font-size: 1.4em; margin: 10px 0;">
-                            <strong>${winner.name}</strong>
-                        </div>
+                        <div class="category-title">${CATEGORY_NAMES[cat]} Winner</div>
+                        <div class="project-title">${winner.name}</div>
                         <div class="instructor">👨‍🏫 Instructor: ${winner.instructor || 'Not specified'}</div>
-                        <div style="opacity: 0.9; margin: 5px 0;">
-                            ${winner.id}<br>
-                            Section ${winner.section}, Team ${winner.team}
+                        <div class="team-meta">
+                            ${winner.id} | Section ${winner.section}, Team ${winner.team}
                         </div>
-                        <div class="members-list">
-                            <h4 style="margin-bottom: 15px;">Team Members</h4>
+                        <div class="members-section">
+                            <h4>👥 Team Members</h4>
                             ${winner.members.map(m => `
-                                <div class="member-item">
-                                    <span>${m.name}</span>
-                                    <span>${m.id}</span>
+                                <div class="member-row">
+                                    <span class="member-name">${m.name}</span>
+                                    <span class="member-id">${m.id}</span>
                                 </div>
                             `).join('')}
                         </div>
-                        <div style="margin-top: 20px; font-size: 1.6em; font-weight: bold;">
-                            🗳️ ${maxVotes} votes
+                        <div class="vote-count">
+                            <span>🗳️ ${maxVotes} votes</span>
                         </div>
                     `;
                     container.appendChild(winnerCard);
                     
-                    resultsText += `🥇 1st PLACE: ${winner.name}\n`;
+                    resultsText += `🥇 WINNER: ${winner.name}\n`;
                     resultsText += `   Instructor: ${winner.instructor || 'N/A'}\n`;
                     resultsText += `   ID: ${winner.id}\n`;
                     resultsText += `   Votes: ${maxVotes}\n`;
-                    resultsText += `   Members:\n`;
+                    resultsText += `   Team Members:\n`;
                     winner.members.forEach(m => {
                         resultsText += `   - ${m.name} (${m.id})\n`;
                     });
@@ -1414,8 +1489,8 @@
                                 <span class="rank-badge ${badgeClass}">${rankSuffix}</span>
                                 <div class="result-info">
                                     <div class="project-title">${medal} ${p.name}</div>
-                                    <div class="project-meta">${p.id} | Section ${p.section}, Team ${p.team}</div>
                                     <div class="instructor">👨‍🏫 ${p.instructor || 'Not specified'}</div>
+                                    <div class="project-meta">${p.id} | Section ${p.section}, Team ${p.team}</div>
                                 </div>
                             </div>
                             <div class="result-votes">
