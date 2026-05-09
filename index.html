@@ -1,1674 +1,1222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IE Projects Voting System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            color: white;
-            padding: 30px 0;
-        }
-
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .card h2 {
-            color: #333;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-success {
-            background: #27ae60;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #229954;
-        }
-
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-warning {
-            background: #f39c12;
-            color: white;
-        }
-
-        .btn-info {
-            background: #3498db;
-            color: white;
-        }
-
-        .btn-telegram {
-            background: #0088cc;
-            color: white;
-        }
-
-        .btn-whatsapp {
-            background: #25d366;
-            color: white;
-        }
-
-        .btn-email {
-            background: #ea4335;
-            color: white;
-        }
-
-        .status-badge {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .status-active {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-stopped {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .tab {
-            padding: 15px 30px;
-            background: rgba(255,255,255,0.9);
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            color: #555;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .tab.active {
-            background: #fff;
-            color: #667eea;
-            border-bottom: 4px solid #667eea;
-        }
-
-        .category-section {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
-
-        .category-section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-
-        .project-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-        }
-
-        .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-
-        .project-image {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 18px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .project-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .project-info {
-            padding: 20px;
-        }
-
-        .project-id {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .project-name {
-            font-size: 1.3em;
-            color: #333;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .instructor-name {
-            color: #e67e22;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .vote-btn {
-            width: 100%;
-            padding: 15px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .vote-btn:hover:not(:disabled) {
-            background: #5568d3;
-            transform: scale(1.02);
-        }
-
-        .vote-btn:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
-        }
-
-        .vote-btn.voted {
-            background: #27ae60;
-        }
-
-        .vote-count {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            margin-left: 10px;
-        }
-
-        .results-section {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            margin-top: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-            display: none;
-        }
-
-        .results-section.active {
-            display: block;
-        }
-
-        /* Winner Card Styling */
-        .winner-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
-        }
-
-        .winner-card::before {
-            content: '👑';
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 50px;
-            opacity: 0.3;
-        }
-
-        .winner-card .category-title {
-            font-size: 1.1em;
-            opacity: 0.9;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .winner-card .project-title {
-            font-size: 2.2em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .winner-card .instructor {
-            font-size: 1.3em;
-            color: #ffd700;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        .winner-card .team-meta {
-            font-size: 1em;
-            opacity: 0.9;
-            margin-bottom: 25px;
-        }
-
-        .winner-card .members-section {
-            background: rgba(255,255,255,0.15);
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: 20px;
-            text-align: left;
-            backdrop-filter: blur(10px);
-        }
-
-        .winner-card .members-section h4 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-            border-bottom: 2px solid rgba(255,255,255,0.3);
-            padding-bottom: 10px;
-        }
-
-        .winner-card .member-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            transition: all 0.3s;
-        }
-
-        .winner-card .member-row:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateX(5px);
-        }
-
-        .winner-card .member-name {
-            font-weight: 600;
-            font-size: 1.1em;
-        }
-
-        .winner-card .member-id {
-            font-family: 'Courier New', monospace;
-            background: rgba(255,255,255,0.2);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9em;
-        }
-
-        .winner-card .vote-count {
-            margin-top: 25px;
-            font-size: 1.8em;
-            font-weight: bold;
-        }
-
-        .winner-card .vote-count span {
-            background: rgba(255,255,255,0.2);
-            padding: 10px 25px;
-            border-radius: 30px;
-        }
-
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .result-category {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            border-left: 5px solid #667eea;
-        }
-
-        .result-category h4 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            background: white;
-            border: 1px solid #e0e0e0;
-        }
-
-        .result-item.winner {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            border: 2px solid #27ae60;
-        }
-
-        .result-item.second {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
-            border: 2px solid #f39c12;
-        }
-
-        .result-item.third {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            border: 2px solid #e74c3c;
-        }
-
-        .rank-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            font-weight: bold;
-            font-size: 14px;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-
-        .rank-1 {
-            background: #ffd700;
-            color: #333;
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
-        }
-
-        .rank-2 {
-            background: #c0c0c0;
-            color: #333;
-        }
-
-        .rank-3 {
-            background: #cd7f32;
-            color: white;
-        }
-
-        .rank-other {
-            background: #e0e0e0;
-            color: #666;
-        }
-
-        .result-info {
-            flex: 1;
-        }
-
-        .result-info .project-title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .result-info .project-meta {
-            font-size: 13px;
-            color: #666;
-        }
-
-        .result-info .instructor {
-            font-size: 13px;
-            color: #e67e22;
-            font-weight: 600;
-        }
-
-        .result-votes {
-            text-align: right;
-        }
-
-        .result-votes .vote-number {
-            font-size: 1.4em;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .result-votes .vote-label {
-            font-size: 12px;
-            color: #999;
-        }
-
-        .share-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 30px 0;
-        }
-
-        .share-btn {
-            padding: 15px 30px;
-            border-radius: 10px;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .share-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .share-telegram { background: #0088cc; }
-        .share-whatsapp { background: #25d366; }
-        .share-email { background: #ea4335; }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-        }
-
-        .close-modal {
-            margin-top: 20px;
-            padding: 12px 30px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .hidden { display: none !important; }
-
-        .setup-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-        }
-
-        .category-setup {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-        }
-
-        .project-setup-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 2px solid #e0e0e0;
-        }
-
-        .file-input-label {
-            display: block;
-            padding: 12px;
-            background: #f0f0f0;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .file-input-label:hover {
-            background: #e0e0e0;
-            border-color: #667eea;
-        }
-
-        .image-preview {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .image-preview.active {
-            display: block;
-        }
-
-        .team-members-input {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .add-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .stats-bar {
-            background: rgba(255,255,255,0.9);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .voter-info {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 4px solid #2196f3;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        @media (max-width: 768px) {
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-            .setup-grid {
-                grid-template-columns: 1fr;
-            }
-            header h1 {
-                font-size: 1.8em;
-            }
-            .winner-card .project-title {
-                font-size: 1.6em;
-            }
-            .winner-card .member-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-            .result-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            .result-votes {
-                text-align: left;
-                width: 100%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IE Projects Voting System - Supabase Cloud</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+body{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}
+.container{max-width:1400px;margin:0 auto}
+header{text-align:center;color:white;padding:30px 0}
+header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,0.3)}
+.card{background:white;border-radius:15px;padding:30px;margin-bottom:25px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
+.card h2{color:#333;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.form-group{margin-bottom:20px}
+.form-group label{display:block;margin-bottom:8px;font-weight:600;color:#555}
+.form-group input,.form-group textarea{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px}
+.form-group input:focus,.form-group textarea:focus{outline:none;border-color:#667eea}
+.btn{padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:600;transition:all 0.3s;text-transform:uppercase;letter-spacing:0.5px;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:#667eea;color:white}
+.btn-primary:hover{background:#5568d3;transform:translateY(-2px);box-shadow:0 5px 15px rgba(102,126,234,0.4)}
+.btn-success{background:#27ae60;color:white}
+.btn-success:hover{background:#229954}
+.btn-danger{background:#e74c3c;color:white}
+.btn-warning{background:#f39c12;color:white}
+.btn-info{background:#3498db;color:white}
+.status-badge{padding:8px 16px;border-radius:20px;font-weight:bold;font-size:14px}
+.status-active{background:#d4edda;color:#155724}
+.status-stopped{background:#f8d7da;color:#721c24}
+.sync-status{padding:8px 16px;border-radius:20px;font-weight:bold;font-size:13px;display:inline-flex;align-items:center;gap:6px}
+.sync-online{background:#d4edda;color:#155724}
+.sync-offline{background:#fff3cd;color:#856404}
+.sync-error{background:#f8d7da;color:#721c24}
+.tabs{display:flex;gap:10px;margin-bottom:30px;flex-wrap:wrap;justify-content:center}
+.tab{padding:15px 30px;background:rgba(255,255,255,0.9);border:none;border-radius:10px;cursor:pointer;font-size:16px;font-weight:600;color:#555;transition:all 0.3s;box-shadow:0 4px 6px rgba(0,0,0,0.1)}
+.tab.active{background:#fff;color:#667eea;border-bottom:4px solid #667eea}
+.category-section{display:none;animation:fadeIn 0.5s}
+.category-section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:25px;margin-bottom:40px}
+.project-card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);transition:all 0.3s}
+.project-card:hover{transform:translateY(-5px);box-shadow:0 15px 40px rgba(0,0,0,0.2)}
+.project-image{width:100%;height:250px;object-fit:cover;background:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);display:flex;align-items:center;justify-content:center;color:#666;font-size:18px;position:relative;overflow:hidden}
+.project-image img{width:100%;height:100%;object-fit:cover}
+.project-info{padding:20px}
+.project-id{display:inline-block;background:#667eea;color:white;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:10px}
+.project-name{font-size:1.3em;color:#333;margin-bottom:8px;font-weight:600}
+.instructor-name{color:#e67e22;font-size:14px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.vote-btn{width:100%;padding:15px;background:#667eea;color:white;border:none;border-radius:10px;font-size:18px;font-weight:bold;cursor:pointer;transition:all 0.3s}
+.vote-btn:hover:not(:disabled){background:#5568d3;transform:scale(1.02)}
+.vote-btn:disabled{background:#95a5a6;cursor:not-allowed}
+.vote-btn.voted{background:#27ae60}
+.vote-count{background:rgba(255,255,255,0.2);padding:5px 15px;border-radius:20px;font-size:14px;margin-left:10px}
+.results-section{background:white;border-radius:20px;padding:40px;margin-top:30px;box-shadow:0 20px 60px rgba(0,0,0,0.2);display:none}
+.results-section.active{display:block}
+.winner-card{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:40px;border-radius:20px;margin-bottom:30px;text-align:center;position:relative;overflow:hidden;box-shadow:0 20px 40px rgba(102,126,234,0.3)}
+.winner-card::before{content:'👑';position:absolute;top:20px;right:20px;font-size:50px;opacity:0.3}
+.winner-card .category-title{font-size:1.1em;opacity:0.9;margin-bottom:10px;text-transform:uppercase;letter-spacing:2px}
+.winner-card .project-title{font-size:2.2em;font-weight:bold;margin-bottom:15px;text-shadow:2px 2px 4px rgba(0,0,0,0.2)}
+.winner-card .instructor{font-size:1.3em;color:#ffd700;margin-bottom:20px;font-weight:600}
+.winner-card .team-meta{font-size:1em;opacity:0.9;margin-bottom:25px}
+.winner-card .members-section{background:rgba(255,255,255,0.15);border-radius:15px;padding:25px;margin-top:20px;text-align:left}
+.winner-card .members-section h4{text-align:center;margin-bottom:20px;font-size:1.2em;border-bottom:2px solid rgba(255,255,255,0.3);padding-bottom:10px}
+.winner-card .member-row{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;margin-bottom:8px;background:rgba(255,255,255,0.1);border-radius:10px}
+.winner-card .member-name{font-weight:600;font-size:1.1em}
+.winner-card .member-id{font-family:'Courier New',monospace;background:rgba(255,255,255,0.2);padding:5px 12px;border-radius:20px;font-size:0.9em}
+.winner-card .vote-count{margin-top:25px;font-size:1.8em;font-weight:bold}
+.winner-card .vote-count span{background:rgba(255,255,255,0.2);padding:10px 25px;border-radius:30px}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:20px;margin-top:30px}
+.result-category{background:#f8f9fa;padding:25px;border-radius:15px;border-left:5px solid #667eea}
+.result-category h4{color:#667eea;margin-bottom:15px;font-size:1.3em}
+.result-item{display:flex;justify-content:space-between;align-items:center;padding:12px;margin-bottom:8px;border-radius:8px;background:white;border:1px solid #e0e0e0}
+.result-item.winner{background:linear-gradient(135deg,#d4edda 0%,#c3e6cb 100%);border:2px solid #27ae60}
+.result-item.second{background:linear-gradient(135deg,#fff3cd 0%,#ffeeba 100%);border:2px solid #f39c12}
+.result-item.third{background:linear-gradient(135deg,#f8d7da 0%,#f5c6cb 100%);border:2px solid #e74c3c}
+.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;font-weight:bold;font-size:14px;margin-right:12px;flex-shrink:0}
+.rank-1{background:#ffd700;color:#333;box-shadow:0 2px 8px rgba(255,215,0,0.5)}
+.rank-2{background:#c0c0c0;color:#333}
+.rank-3{background:#cd7f32;color:white}
+.rank-other{background:#e0e0e0;color:#666}
+.result-info{flex:1}
+.result-info .project-title{font-weight:600;color:#333;margin-bottom:4px}
+.result-info .project-meta{font-size:13px;color:#666}
+.result-info .instructor{font-size:13px;color:#e67e22;font-weight:600}
+.result-votes{text-align:right}
+.result-votes .vote-number{font-size:1.4em;font-weight:bold;color:#667eea}
+.result-votes .vote-label{font-size:12px;color:#999}
+.share-buttons{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin:30px 0}
+.share-btn{padding:15px 30px;border-radius:10px;color:white;text-decoration:none;font-weight:bold;display:inline-flex;align-items:center;gap:10px;transition:all 0.3s;border:none;cursor:pointer;font-size:16px}
+.share-btn:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,0.2)}
+.share-telegram{background:#0088cc}
+.share-whatsapp{background:#25d366}
+.share-email{background:#ea4335}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center}
+.modal.active{display:flex}
+.modal-content{background:white;padding:40px;border-radius:20px;max-width:500px;width:90%;text-align:center}
+.close-modal{margin-top:20px;padding:12px 30px;background:#667eea;color:white;border:none;border-radius:8px;cursor:pointer;font-size:16px}
+.hidden{display:none !important}
+.setup-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:20px}
+.category-setup{background:#f8f9fa;padding:20px;border-radius:10px}
+.project-setup-item{background:white;padding:15px;border-radius:8px;margin-bottom:10px;border:2px solid #e0e0e0}
+.file-input-label{display:block;padding:12px;background:#f0f0f0;border:2px dashed #ccc;border-radius:8px;text-align:center;cursor:pointer;transition:all 0.3s}
+.file-input-label:hover{background:#e0e0e0;border-color:#667eea}
+.image-preview{width:100%;height:150px;object-fit:cover;border-radius:8px;margin-top:10px;display:none}
+.image-preview.active{display:block}
+.team-members-input{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.add-btn{background:#667eea;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;margin-top:5px}
+.stats-bar{background:rgba(255,255,255,0.9);padding:15px;border-radius:10px;margin-bottom:20px;display:flex;justify-content:space-around;flex-wrap:wrap;gap:15px}
+.stat-item{text-align:center}
+.stat-value{font-size:2em;font-weight:bold;color:#667eea}
+.stat-label{color:#666;font-size:14px}
+.voter-info{background:#e3f2fd;padding:15px;border-radius:10px;margin-bottom:20px;border-left:4px solid #2196f3}
+.empty-state{text-align:center;padding:60px 20px;color:#666}
+.empty-state h3{font-size:1.5em;margin-bottom:10px;color:#333}
+.loading-spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:white;animation:spin 1s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.supabase-config-box{background:#f8f9fa;border:2px dashed #3ecf8e;border-radius:10px;padding:20px;margin-bottom:20px}
+.supabase-config-box h3{color:#3ecf8e;margin-bottom:15px}
+.code-block{background:#2d2d2d;color:#f8f8f2;padding:15px;border-radius:8px;font-family:'Courier New',monospace;font-size:13px;overflow-x:auto;margin:10px 0;line-height:1.5}
+.debug-box{background:#fff3cd;border:2px solid #f39c12;border-radius:10px;padding:15px;margin:15px 0;color:#856404}
+.debug-box h4{color:#856404;margin-bottom:10px}
+@media(max-width:768px){.projects-grid{grid-template-columns:1fr}.setup-grid{grid-template-columns:1fr}header h1{font-size:1.8em}.winner-card .project-title{font-size:1.6em}.winner-card .member-row{flex-direction:column;align-items:flex-start;gap:5px}.result-item{flex-direction:column;align-items:flex-start;gap:10px}.result-votes{text-align:left;width:100%}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🏆 IE Projects Voting System</h1>
-            <p>Select the best project from each category</p>
-        </header>
+<div class="container">
+<header>
+<h1>🏆 IE Projects Voting System</h1>
+<p>Supabase Cloud - Real-Time Sync</p>
+</header>
 
-        <!-- Voter Registration -->
-        <div class="card" id="voterRegistration">
-            <h2>📝 Voter Registration</h2>
-            <div id="registrationForm">
-                <div class="form-group">
-                    <label>Full Name *</label>
-                    <input type="text" id="voterName" placeholder="Enter your full name" required>
-                </div>
-                <div class="form-group">
-                    <label>University ID *</label>
-                    <input type="text" id="voterId" placeholder="Enter your university ID" required>
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="voterEmail" placeholder="Enter your email (optional)">
-                </div>
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="tel" id="voterPhone" placeholder="Enter your phone (optional)">
-                </div>
-                <button class="btn btn-primary" onclick="registerVoter()">Register to Vote</button>
-            </div>
-            <div id="voterInfo" class="voter-info hidden">
-                <strong>✓ Registered Voter:</strong> <span id="registeredName"></span> (<span id="registeredId"></span>)
-                <button class="btn btn-danger" style="float: right; padding: 5px 15px; font-size: 12px;" onclick="logoutVoter()">Change Voter</button>
-            </div>
-        </div>
+<!-- Supabase Config Input -->
+<div class="card" id="supabaseConfigCard">
+<h2>⚡ Connect to Supabase</h2>
+<p style="margin-bottom:20px;color:#666">To enable real-time sync across all devices, enter your Supabase credentials below.</p>
+<div class="supabase-config-box">
+<h3>📋 Enter Your Supabase Credentials</h3>
+<div class="form-group">
+<label>Supabase URL (from Project Settings → API)</label>
+<input type="text" id="supabaseUrl" placeholder="https://abcdefgh12345678.supabase.co">
+</div>
+<div class="form-group">
+<label>Supabase Anon Key (from Project Settings → API)</label>
+<input type="text" id="supabaseKey" placeholder="eyJhbGciOiJIUzI1NiIs...">
+</div>
+<button class="btn btn-primary" onclick="connectSupabase()">Connect to Supabase</button>
+<button class="btn btn-success" onclick="useLocalMode()">Use Offline Mode (No Sync)</button>
+</div>
 
-        <!-- Admin Panel -->
-        <div class="card" id="adminPanel">
-            <h2>🔐 Admin Control Panel</h2>
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-                <input type="password" id="adminPassword" class="form-group" style="width: 200px;" placeholder="Admin password">
-                <button class="btn btn-primary" onclick="loginAdmin()">Login</button>
-                <span id="adminStatus" class="status-badge status-active">Voting Active</span>
-                <button class="btn btn-danger hidden" id="stopVoteBtn" onclick="stopVoting()">Stop Voting</button>
-                <button class="btn btn-success hidden" id="startVoteBtn" onclick="startVoting()">Resume Voting</button>
-                <button class="btn btn-warning hidden" id="showResultsBtn" onclick="showResults()">Show Results</button>
-                <button class="btn btn-primary hidden" id="setupBtn" onclick="showSetup()">Setup Projects</button>
-                <button class="btn btn-info hidden" id="votersBtn" onclick="showVotersList()">View Voters</button>
-                <button class="btn btn-danger hidden" id="resetBtn" onclick="resetAll()">Reset All</button>
-            </div>
-        </div>
+<div class="debug-box" id="debugBox" style="display:none">
+<h4>🔍 Debug Info</h4>
+<div id="debugContent"></div>
+<button class="btn btn-info" onclick="document.getElementById('debugBox').style.display='none'" style="margin-top:10px">Hide Debug</button>
+</div>
 
-        <!-- Setup Section -->
-        <div class="card hidden" id="setupSection">
-            <h2>⚙️ Project Setup</h2>
-            <p style="margin-bottom: 20px; color: #666;">Add projects to each category. Section and Team numbers can include letters (e.g., Section "A1", Team "5"). Only configured projects will appear for voting.</p>
-            <div class="setup-grid" id="setupGrid"></div>
-            <button class="btn btn-success" style="width: 100%; margin-top: 20px;" onclick="saveSetup()">💾 Save All Projects</button>
-        </div>
+<div id="supabaseSetupSteps" style="margin-top:30px;display:none">
+<h3>🔧 How to Create Supabase Project (5 minutes)</h3>
+<ol style="line-height:2;color:#555">
+<li>Go to <a href="https://supabase.com" target="_blank" style="color:#667eea">Supabase.com</a> and click "Start your project"</li>
+<li>Sign up with Google or email</li>
+<li>Click "New Project" → Name it <code>IE-Voting</code></li>
+<li>Choose a strong database password → Click "Create new project"</li>
+<li>Wait 1-2 minutes for the project to be ready</li>
+<li>Go to <strong>Project Settings → API</strong> (in left sidebar)</li>
+<li>Copy the <strong>URL</strong> and <strong>anon/public</strong> key</li>
+<li>Paste them above and click "Connect"</li>
+</ol>
+<h4 style="margin-top:20px;color:#333">⚠️ Important: Run This SQL First</h4>
+<p style="color:#555;margin-bottom:10px">In the SQL Editor, run:</p>
+<div class="code-block">CREATE TABLE projects (id TEXT PRIMARY KEY, name TEXT NOT NULL, instructor TEXT, category TEXT NOT NULL, section TEXT, team TEXT, image TEXT, members JSONB DEFAULT '[]', created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE votes (id TEXT PRIMARY KEY, category TEXT NOT NULL, project_id TEXT NOT NULL, count INTEGER DEFAULT 0, last_updated TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE voters (university_id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT, phone TEXT, voted_categories JSONB DEFAULT '[]', registered_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE settings (key TEXT PRIMARY KEY, value JSONB DEFAULT '{}');
+INSERT INTO settings (key, value) VALUES ('voting', '{"active": true}');
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE voters ENABLE ROW LEVEL SECURITY;
+ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all" ON projects FOR ALL USING (true);
+CREATE POLICY "Allow all" ON votes FOR ALL USING (true);
+CREATE POLICY "Allow all" ON voters FOR ALL USING (true);
+CREATE POLICY "Allow all" ON settings FOR ALL USING (true);</div>
+<p style="color:#555;margin-top:15px"><strong>Then enable Realtime:</strong> Database → Replication → Source → Toggle ON all 4 tables</p>
+</div>
+<p style="margin-top:15px"><a href="#" onclick="toggleSetupSteps();return false" style="color:#667eea">📖 Show/Hide Full Setup Instructions</a></p>
+</div>
 
-        <!-- Voters List (Admin Only) -->
-        <div class="card hidden" id="votersListSection">
-            <h2>👥 Registered Voters</h2>
-            <div id="votersTable"></div>
-        </div>
+<!-- Connection Status -->
+<div class="card hidden" id="connectionStatusCard">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+<h2 style="margin:0">⚡ Cloud Status</h2>
+<span id="syncStatus" class="sync-status sync-offline">⚠ Offline Mode</span>
+</div>
+</div>
 
-        <!-- Stats -->
-        <div class="stats-bar" id="statsBar">
-            <div class="stat-item">
-                <div class="stat-value" id="totalVotes">0</div>
-                <div class="stat-label">Total Votes</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="totalProjects">0</div>
-                <div class="stat-label">Active Projects</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="registeredVoters">0</div>
-                <div class="stat-label">Registered Voters</div>
-            </div>
-        </div>
+<!-- Voter Registration -->
+<div class="card hidden" id="voterRegistration">
+<h2>📝 Voter Registration</h2>
+<div id="registrationForm">
+<div class="form-group"><label>Full Name *</label><input type="text" id="voterName" placeholder="Enter your full name"></div>
+<div class="form-group"><label>University ID *</label><input type="text" id="voterId" placeholder="Enter your university ID"></div>
+<div class="form-group"><label>Email</label><input type="email" id="voterEmail" placeholder="Enter your email (optional)"></div>
+<div class="form-group"><label>Phone Number</label><input type="tel" id="voterPhone" placeholder="Enter your phone (optional)"></div>
+<button class="btn btn-primary" onclick="registerVoter()">Register to Vote</button>
+</div>
+<div id="voterInfo" class="voter-info hidden">
+<strong>✓ Registered Voter:</strong> <span id="registeredName"></span> (<span id="registeredId"></span>)
+<button class="btn btn-danger" style="float:right;padding:5px 15px;font-size:12px" onclick="logoutVoter()">Change Voter</button>
+</div>
+</div>
 
-        <!-- Category Tabs -->
-        <div class="tabs" id="categoryTabs">
-            <button class="tab active" onclick="switchTab('IE201-M')">IE201 - Males</button>
-            <button class="tab" onclick="switchTab('IE201-F')">IE201 - Females</button>
-            <button class="tab" onclick="switchTab('IE202-M')">IE202 - Males</button>
-            <button class="tab" onclick="switchTab('IE202-F')">IE202 - Females</button>
-        </div>
+<!-- Admin Panel -->
+<div class="card hidden" id="adminPanel">
+<h2>🔐 Admin Control Panel</h2>
+<div style="display:flex;gap:15px;flex-wrap:wrap;align-items:center">
+<input type="password" id="adminPassword" style="width:200px;padding:12px;border:2px solid #ddd;border-radius:8px" placeholder="Admin password">
+<button class="btn btn-primary" onclick="loginAdmin()">Login</button>
+<span id="adminStatus" class="status-badge status-active">Voting Active</span>
+<button class="btn btn-danger hidden" id="stopVoteBtn" onclick="stopVoting()">Stop Voting</button>
+<button class="btn btn-success hidden" id="startVoteBtn" onclick="startVoting()">Resume Voting</button>
+<button class="btn btn-warning hidden" id="showResultsBtn" onclick="showResults()">Show Results</button>
+<button class="btn btn-primary hidden" id="setupBtn" onclick="showSetup()">Setup Projects</button>
+<button class="btn btn-info hidden" id="votersBtn" onclick="showVotersList()">View Voters</button>
+<button class="btn btn-danger hidden" id="resetBtn" onclick="resetAll()">Reset All</button>
+</div>
+</div>
 
-        <!-- Voting Sections -->
-        <div id="votingSections">
-            <div class="category-section active" id="section-IE201-M">
-                <div class="projects-grid" id="grid-IE201-M"></div>
-            </div>
-            <div class="category-section" id="section-IE201-F">
-                <div class="projects-grid" id="grid-IE201-F"></div>
-            </div>
-            <div class="category-section" id="section-IE202-M">
-                <div class="projects-grid" id="grid-IE202-M"></div>
-            </div>
-            <div class="category-section" id="section-IE202-F">
-                <div class="projects-grid" id="grid-IE202-F"></div>
-            </div>
-        </div>
+<!-- Setup Section -->
+<div class="card hidden" id="setupSection">
+<h2>⚙️ Project Setup</h2>
+<p style="margin-bottom:20px;color:#666">Add projects to each category. Section can include letters. Team is numbers only. Data syncs to all devices automatically.</p>
+<div class="setup-grid" id="setupGrid"></div>
+<button class="btn btn-success" style="width:100%;margin-top:20px" onclick="saveSetup()">💾 Save All Projects & Sync to Cloud</button>
+</div>
 
-        <!-- Results Section -->
-        <div class="results-section" id="resultsSection">
-            <h2 style="text-align: center; margin-bottom: 10px; color: #333; font-size: 2em;">🏆 Final Results</h2>
-            <p style="text-align: center; color: #666; margin-bottom: 30px;">Ranked winners announcement</p>
-            
-            <div id="winnersContainer"></div>
-            
-            <div style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin: 30px 0;">
-                <h3 style="text-align: center; margin-bottom: 20px; color: #333;">📊 Share Results</h3>
-                <div class="share-buttons">
-                    <button class="share-btn share-telegram" onclick="shareTelegram()">
-                        📱 Share via Telegram
-                    </button>
-                    <button class="share-btn share-whatsapp" onclick="shareWhatsApp()">
-                        💬 Share via WhatsApp
-                    </button>
-                    <button class="share-btn share-email" onclick="shareEmail()">
-                        📧 Share via Email
-                    </button>
-                </div>
-                <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 10px;">Or copy results text:</label>
-                    <textarea id="resultsText" style="width: 100%; height: 250px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 14px;" readonly></textarea>
-                    <button class="btn btn-primary" style="margin-top: 10px;" onclick="copyResults()">📋 Copy to Clipboard</button>
-                </div>
-            </div>
-            
-            <div class="results-grid" id="fullResults"></div>
-        </div>
+<!-- Voters List -->
+<div class="card hidden" id="votersListSection">
+<h2>👥 Registered Voters</h2>
+<div id="votersTable"></div>
+</div>
 
-        <!-- Voting Closed -->
-        <div class="card hidden" id="votingClosed" style="text-align: center; color: #e74c3c;">
-            <h2 style="font-size: 2.5em; margin-bottom: 20px;">🚫 Voting Closed</h2>
-            <p>Voting has been stopped by the administrator.</p>
-        </div>
-    </div>
+<!-- Stats -->
+<div class="stats-bar hidden" id="statsBar">
+<div class="stat-item"><div class="stat-value" id="totalVotes">0</div><div class="stat-label">Total Votes</div></div>
+<div class="stat-item"><div class="stat-value" id="totalProjects">0</div><div class="stat-label">Active Projects</div></div>
+<div class="stat-item"><div class="stat-value" id="registeredVoters">0</div><div class="stat-label">Registered Voters</div></div>
+</div>
 
-    <!-- Modal -->
-    <div class="modal" id="messageModal">
-        <div class="modal-content">
-            <h2 id="modalTitle" style="color: #667eea; margin-bottom: 20px;">Message</h2>
-            <p id="modalMessage"></p>
-            <button class="close-modal" onclick="closeModal()">OK</button>
-        </div>
-    </div>
+<!-- Category Tabs -->
+<div class="tabs hidden" id="categoryTabs">
+<button class="tab active" onclick="switchTab('IE201-M')">IE201 - Males</button>
+<button class="tab" onclick="switchTab('IE201-F')">IE201 - Females</button>
+<button class="tab" onclick="switchTab('IE202-M')">IE202 - Males</button>
+<button class="tab" onclick="switchTab('IE202-F')">IE202 - Females</button>
+</div>
 
-    <script>
-        // Configuration
-        const ADMIN_PASSWORD = 'A123!@#z';
-        const CATEGORIES = ['IE201-M', 'IE201-F', 'IE202-M', 'IE202-F'];
-        const CATEGORY_NAMES = {
-            'IE201-M': 'IE201 - Males',
-            'IE201-F': 'IE201 - Females',
-            'IE202-M': 'IE202 - Males',
-            'IE202-F': 'IE202 - Females'
-        };
+<!-- Voting Sections -->
+<div id="votingSections">
+<div class="category-section active" id="section-IE201-M"><div class="projects-grid" id="grid-IE201-M"></div></div>
+<div class="category-section" id="section-IE201-F"><div class="projects-grid" id="grid-IE201-F"></div></div>
+<div class="category-section" id="section-IE202-M"><div class="projects-grid" id="grid-IE202-M"></div></div>
+<div class="category-section" id="section-IE202-F"><div class="projects-grid" id="grid-IE202-F"></div></div>
+</div>
 
-        // State
-        let isVotingActive = true;
-        let isAdmin = false;
-        let projects = {};
-        let votes = {};
-        let voters = [];
-        let currentVoter = null;
+<!-- Results Section -->
+<div class="results-section" id="resultsSection">
+<h2 style="text-align:center;margin-bottom:10px;color:#333;font-size:2em">🏆 Final Results</h2>
+<p style="text-align:center;color:#666;margin-bottom:30px">Ranked winners announcement</p>
+<div id="winnersContainer"></div>
+<div style="background:#f8f9fa;padding:25px;border-radius:15px;margin:30px 0">
+<h3 style="text-align:center;margin-bottom:20px;color:#333">📊 Share Results</h3>
+<div class="share-buttons">
+<button class="share-btn share-telegram" onclick="shareTelegram()">📱 Share via Telegram</button>
+<button class="share-btn share-whatsapp" onclick="shareWhatsApp()">💬 Share via WhatsApp</button>
+<button class="share-btn share-email" onclick="shareEmail()">📧 Share via Email</button>
+</div>
+<div style="margin-top:20px;padding:15px;background:white;border-radius:8px;border:1px solid #ddd">
+<label style="font-weight:bold;display:block;margin-bottom:10px">Or copy results text:</label>
+<textarea id="resultsText" style="width:100%;height:250px;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:14px" readonly></textarea>
+<button class="btn btn-primary" style="margin-top:10px" onclick="copyResults()">📋 Copy to Clipboard</button>
+</div>
+</div>
+<div class="results-grid" id="fullResults"></div>
+</div>
 
-        // Initialize
-        function init() {
-            loadData();
-            
-            CATEGORIES.forEach(cat => {
-                if (!projects[cat]) projects[cat] = [];
-                if (!votes[cat]) votes[cat] = {};
-            });
-            
-            const savedVoter = localStorage.getItem('currentVoter');
-            if (savedVoter) {
-                currentVoter = JSON.parse(savedVoter);
-                showVoterInfo();
-            }
-            
-            const votingStatus = localStorage.getItem('votingStatus');
-            if (votingStatus === 'stopped') {
-                isVotingActive = false;
-                document.getElementById('adminStatus').textContent = 'Voting Stopped';
-                document.getElementById('adminStatus').className = 'status-badge status-stopped';
-            }
-            
-            renderAll();
-            updateStats();
+<!-- Voting Closed -->
+<div class="card hidden" id="votingClosed" style="text-align:center;color:#e74c3c">
+<h2 style="font-size:2.5em;margin-bottom:20px">🚫 Voting Closed</h2>
+<p>Voting has been stopped by the administrator.</p>
+</div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="messageModal">
+<div class="modal-content">
+<h2 id="modalTitle" style="color:#667eea;margin-bottom:20px">Message</h2>
+<p id="modalMessage"></p>
+<button class="close-modal" onclick="closeModal()">OK</button>
+</div>
+</div>
+
+<script>
+// ==================== CONFIGURATION ====================
+const ADMIN_PASSWORD = 'admin123';
+const CATEGORIES = ['IE201-M', 'IE201-F', 'IE202-M', 'IE202-F'];
+const CATEGORY_NAMES = {
+    'IE201-M': 'IE201 - Males',
+    'IE201-F': 'IE201 - Females',
+    'IE202-M': 'IE202 - Males',
+    'IE202-F': 'IE202 - Females'
+};
+
+// ==================== STATE ====================
+let isVotingActive = true;
+let isAdmin = false;
+let supabaseClient = null;
+let isCloudMode = false;
+let projects = {};
+let votes = {};
+let voters = [];
+let currentVoter = null;
+
+// Initialize categories
+CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
+
+// ==================== DEBUG HELPERS ====================
+function showDebug(msg) {
+    const box = document.getElementById('debugBox');
+    const content = document.getElementById('debugContent');
+    if (box && content) {
+        content.innerHTML += '<p>' + msg + '</p>';
+        box.style.display = 'block';
+    }
+    console.log('[DEBUG]', msg);
+}
+
+function clearDebug() {
+    const content = document.getElementById('debugContent');
+    if (content) content.innerHTML = '';
+}
+
+// ==================== SUPABASE CONNECTION ====================
+function toggleSetupSteps() {
+    const el = document.getElementById('supabaseSetupSteps');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+async function connectSupabase() {
+    clearDebug();
+    const url = document.getElementById('supabaseUrl').value.trim();
+    const key = document.getElementById('supabaseKey').value.trim();
+
+    if (!url || !key) {
+        showModal('Error', 'Please enter both Supabase URL and Anon Key.');
+        return;
+    }
+
+    showDebug('Step 1: Got URL=' + url.substring(0, 30) + '... Key=' + key.substring(0, 20) + '...');
+
+    try {
+        // Check if supabase library loaded
+        if (typeof supabase === 'undefined' || !supabase.createClient) {
+            showDebug('ERROR: Supabase library not loaded! Check internet connection.');
+            showModal('Error', 'Supabase library failed to load. Please check your internet connection and refresh the page.');
+            return;
         }
+        showDebug('Step 2: Supabase library detected ✓');
 
-        function loadData() {
-            const saved = localStorage.getItem('votingData');
-            if (saved) {
-                const data = JSON.parse(saved);
-                projects = data.projects || {};
-                votes = data.votes || {};
-                voters = data.voters || [];
-            }
-        }
+        // Create client
+        supabaseClient = supabase.createClient(url, key);
+        showDebug('Step 3: Client created ✓');
 
-        function saveData() {
-            localStorage.setItem('votingData', JSON.stringify({ 
-                projects, 
-                votes, 
-                voters,
-                lastSaved: new Date().toISOString()
-            }));
-        }
+        // Test connection with a simple query
+        showDebug('Step 4: Testing connection...');
+        const { data, error } = await supabaseClient.from('settings').select('*').limit(1);
 
-        // Voter Registration
-        function registerVoter() {
-            const name = document.getElementById('voterName').value.trim();
-            const id = document.getElementById('voterId').value.trim();
-            const email = document.getElementById('voterEmail').value.trim();
-            const phone = document.getElementById('voterPhone').value.trim();
-            
-            if (!name || !id) {
-                showModal('Error', 'Please enter your name and university ID.');
-                return;
-            }
-            
-            const existing = voters.find(v => v.universityId === id);
-            if (existing) {
-                showModal('Already Registered', 'This university ID is already registered. Please use a different ID or contact admin.');
-                return;
-            }
-            
-            currentVoter = {
-                name,
-                universityId: id,
-                email,
-                phone,
-                registeredAt: new Date().toISOString(),
-                id: 'voter_' + Date.now()
-            };
-            
-            voters.push(currentVoter);
-            localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
-            saveData();
-            
-            showVoterInfo();
-            updateStats();
-            showModal('Welcome!', `Hello ${name}! You are now registered and can vote.`);
-        }
+        if (error) {
+            showDebug('Step 4 FAILED: ' + error.message + ' (code: ' + (error.code || 'none') + ')');
 
-        function showVoterInfo() {
-            document.getElementById('registrationForm').classList.add('hidden');
-            document.getElementById('voterInfo').classList.remove('hidden');
-            document.getElementById('registeredName').textContent = currentVoter.name;
-            document.getElementById('registeredId').textContent = currentVoter.universityId;
-        }
-
-        function logoutVoter() {
-            if (confirm('Are you sure you want to change voter? Your votes will be kept.')) {
-                currentVoter = null;
-                localStorage.removeItem('currentVoter');
-                document.getElementById('registrationForm').classList.remove('hidden');
-                document.getElementById('voterInfo').classList.add('hidden');
-                document.getElementById('voterName').value = '';
-                document.getElementById('voterId').value = '';
-                document.getElementById('voterEmail').value = '';
-                document.getElementById('voterPhone').value = '';
-                renderAll();
-            }
-        }
-
-        // Admin Functions
-        function loginAdmin() {
-            const password = document.getElementById('adminPassword').value;
-            if (password === ADMIN_PASSWORD) {
-                isAdmin = true;
-                document.getElementById('stopVoteBtn').classList.remove('hidden');
-                document.getElementById('startVoteBtn').classList.remove('hidden');
-                document.getElementById('showResultsBtn').classList.remove('hidden');
-                document.getElementById('setupBtn').classList.remove('hidden');
-                document.getElementById('votersBtn').classList.remove('hidden');
-                document.getElementById('resetBtn').classList.remove('hidden');
-                document.getElementById('adminPassword').classList.add('hidden');
-                event.target.classList.add('hidden');
-                showModal('Welcome Admin!', 'You have full control of the voting system.');
+            // Provide specific guidance based on error
+            let helpMsg = '';
+            if (error.message && error.message.includes('relation') && error.message.includes('does not exist')) {
+                helpMsg = '\n\nThe database tables do not exist yet.\nPlease run the SQL setup script first (see setup instructions).\nGo to Supabase → SQL Editor and run the CREATE TABLE commands.';
+            } else if (error.message && error.message.includes('Invalid API key')) {
+                helpMsg = '\n\nYour API key is incorrect.\nMake sure you copied the "anon/public" key (not the service_role key).\nGo to Project Settings → API in Supabase.';
+            } else if (error.message && error.message.includes('Failed to fetch')) {
+                helpMsg = '\n\nCannot connect to Supabase.\nCheck your internet connection and make sure the URL is correct.';
+            } else if (error.code === '42501' || error.message.includes('permission')) {
+                helpMsg = '\n\nPermission denied.\nMake sure you created the RLS policies in the SQL setup.\nThe policies should say "FOR ALL USING (true)".';
             } else {
-                showModal('Error', 'Incorrect password!');
+                helpMsg = '\n\nUnexpected error. Please check:\n1. Tables are created (SQL Editor)\n2. RLS policies allow access\n3. URL and Key are correct\n4. Internet connection is working';
             }
+
+            showModal('Connection Failed', error.message + helpMsg);
+            return;
         }
 
-        function stopVoting() {
-            isVotingActive = false;
-            localStorage.setItem('votingStatus', 'stopped');
-            document.getElementById('adminStatus').textContent = 'Voting Stopped';
-            document.getElementById('adminStatus').className = 'status-badge status-stopped';
-            showVotingClosed();
-            saveData();
-            showModal('Voting Stopped', 'Voting is now closed. No new votes can be cast.');
+        showDebug('Step 5: Connection test passed ✓');
+        isCloudMode = true;
+
+        // Hide config, show app
+        document.getElementById('supabaseConfigCard').classList.add('hidden');
+        document.getElementById('connectionStatusCard').classList.remove('hidden');
+        document.getElementById('voterRegistration').classList.remove('hidden');
+        document.getElementById('adminPanel').classList.remove('hidden');
+        document.getElementById('statsBar').classList.remove('hidden');
+        document.getElementById('categoryTabs').classList.remove('hidden');
+
+        updateSyncStatus('online', '✓ Connected to Supabase Cloud');
+        showDebug('Step 6: UI updated ✓');
+
+        // Load all data
+        showDebug('Step 7: Loading data from cloud...');
+        await loadCloudData();
+        showDebug('Step 8: Data loaded ✓');
+
+        // Setup realtime
+        setupRealtime();
+        showDebug('Step 9: Realtime subscriptions active ✓');
+
+        // Load local voter
+        const savedVoter = localStorage.getItem('currentVoter');
+        if (savedVoter) {
+            currentVoter = JSON.parse(savedVoter);
+            showVoterInfo();
         }
 
-        function startVoting() {
-            isVotingActive = true;
-            localStorage.setItem('votingStatus', 'active');
-            document.getElementById('adminStatus').textContent = 'Voting Active';
-            document.getElementById('adminStatus').className = 'status-badge status-active';
+        showModal('Success!', 'Connected to Supabase! All data will now sync across devices in real-time.\n\nYou can now setup projects and start voting.');
+
+    } catch (e) {
+        showDebug('CRITICAL ERROR: ' + e.message);
+        console.error('Connection error:', e);
+        showModal('Critical Error', 'Something went wrong:\n' + e.message + '\n\nPlease check the browser console (F12) for more details.');
+    }
+}
+
+function useLocalMode() {
+    isCloudMode = false;
+    document.getElementById('supabaseConfigCard').classList.add('hidden');
+    document.getElementById('connectionStatusCard').classList.remove('hidden');
+    document.getElementById('voterRegistration').classList.remove('hidden');
+    document.getElementById('adminPanel').classList.remove('hidden');
+    document.getElementById('statsBar').classList.remove('hidden');
+    document.getElementById('categoryTabs').classList.remove('hidden');
+    updateSyncStatus('offline', '⚠ Offline Mode - No Sync');
+    loadLocalData();
+    showModal('Offline Mode', 'Running without cloud sync. Data is stored only on this device.');
+}
+
+function updateSyncStatus(status, text) {
+    const el = document.getElementById('syncStatus');
+    if (el) {
+        el.className = 'sync-status sync-' + status;
+        el.textContent = text;
+    }
+}
+
+// ==================== REALTIME ====================
+function setupRealtime() {
+    if (!supabaseClient) return;
+
+    // Subscribe to all tables
+    supabaseClient.channel('db-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => { loadCloudProjects(); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, () => { loadCloudVotes(); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'voters' }, () => { loadCloudVoters(); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, () => { loadCloudSettings(); })
+        .subscribe((status) => {
+            console.log('Realtime status:', status);
+            if (status === 'SUBSCRIBED') {
+                updateSyncStatus('online', '✓ Live Sync Active');
+            } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                updateSyncStatus('error', '✗ Sync Disconnected');
+            }
+        });
+}
+
+// ==================== CLOUD DATA LOADING ====================
+async function loadCloudData() {
+    await loadCloudProjects();
+    await loadCloudVotes();
+    await loadCloudVoters();
+    await loadCloudSettings();
+    renderAll();
+    updateStats();
+}
+
+async function loadCloudProjects() {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient.from('projects').select('*');
+    if (error) { console.error('Projects load error:', error); return; }
+
+    const newProjects = {};
+    CATEGORIES.forEach(cat => newProjects[cat] = []);
+
+    (data || []).forEach(row => {
+        const proj = { ...row };
+        if (typeof proj.members === 'string') {
+            try { proj.members = JSON.parse(proj.members); } catch(e) { proj.members = []; }
+        }
+        if (!proj.members) proj.members = [];
+        if (CATEGORIES.includes(proj.category)) {
+            newProjects[proj.category].push(proj);
+        }
+    });
+
+    projects = newProjects;
+    renderAll();
+    updateStats();
+}
+
+async function loadCloudVotes() {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient.from('votes').select('*');
+    if (error) { console.error('Votes load error:', error); return; }
+
+    const newVotes = {};
+    CATEGORIES.forEach(cat => newVotes[cat] = {});
+
+    (data || []).forEach(row => {
+        if (!newVotes[row.category]) newVotes[row.category] = {};
+        newVotes[row.category][row.project_id] = row.count || 0;
+    });
+
+    votes = newVotes;
+    renderAll();
+    updateStats();
+}
+
+async function loadCloudVoters() {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient.from('voters').select('*');
+    if (error) { console.error('Voters load error:', error); return; }
+
+    voters = (data || []).map(row => {
+        const v = { ...row };
+        if (typeof v.voted_categories === 'string') {
+            try { v.voted_categories = JSON.parse(v.voted_categories); } catch(e) { v.voted_categories = []; }
+        }
+        if (!v.voted_categories) v.voted_categories = [];
+        return v;
+    });
+    updateStats();
+}
+
+async function loadCloudSettings() {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient.from('settings').select('*').eq('key', 'voting').single();
+    if (error) { 
+        if (error.code !== 'PGRST116') console.error('Settings load error:', error);
+        return; 
+    }
+
+    if (data && data.value) {
+        const val = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
+        isVotingActive = val.active !== false;
+
+        const statusEl = document.getElementById('adminStatus');
+        if (isVotingActive) {
+            statusEl.textContent = 'Voting Active';
+            statusEl.className = 'status-badge status-active';
             document.getElementById('votingClosed').classList.add('hidden');
             document.getElementById('categoryTabs').classList.remove('hidden');
             document.getElementById('votingSections').classList.remove('hidden');
-            document.getElementById('resultsSection').classList.remove('active');
-            renderAll();
-            showModal('Voting Resumed', 'Voting is now open again!');
+        } else {
+            statusEl.textContent = 'Voting Stopped';
+            statusEl.className = 'status-badge status-stopped';
+            showVotingClosed();
         }
+    }
+}
 
-        function showVotingClosed() {
-            document.getElementById('categoryTabs').classList.add('hidden');
-            document.getElementById('votingSections').classList.add('hidden');
-            document.getElementById('votingClosed').classList.remove('hidden');
+// ==================== LOCAL STORAGE ====================
+function loadLocalData() {
+    const saved = localStorage.getItem('votingData');
+    if (saved) {
+        const data = JSON.parse(saved);
+        projects = data.projects || {};
+        votes = data.votes || {};
+        voters = data.voters || [];
+    }
+    CATEGORIES.forEach(cat => {
+        if (!projects[cat]) projects[cat] = [];
+        if (!votes[cat]) votes[cat] = {};
+    });
+
+    const savedVoter = localStorage.getItem('currentVoter');
+    if (savedVoter) {
+        currentVoter = JSON.parse(savedVoter);
+        showVoterInfo();
+    }
+
+    const votingStatus = localStorage.getItem('votingStatus');
+    if (votingStatus === 'stopped') {
+        isVotingActive = false;
+        document.getElementById('adminStatus').textContent = 'Voting Stopped';
+        document.getElementById('adminStatus').className = 'status-badge status-stopped';
+    }
+
+    renderAll();
+    updateStats();
+}
+
+function saveLocalData() {
+    if (!isCloudMode) {
+        localStorage.setItem('votingData', JSON.stringify({ projects, votes, voters }));
+    }
+}
+
+// ==================== VOTER REGISTRATION ====================
+async function registerVoter() {
+    const name = document.getElementById('voterName').value.trim();
+    const id = document.getElementById('voterId').value.trim();
+    const email = document.getElementById('voterEmail').value.trim();
+    const phone = document.getElementById('voterPhone').value.trim();
+
+    if (!name || !id) {
+        showModal('Error', 'Please enter your name and university ID.');
+        return;
+    }
+
+    const existing = voters.find(v => v.university_id === id);
+    if (existing) {
+        showModal('Already Registered', 'This university ID is already registered.');
+        return;
+    }
+
+    currentVoter = {
+        name,
+        university_id: id,
+        email,
+        phone,
+        voted_categories: [],
+        registered_at: new Date().toISOString()
+    };
+
+    if (isCloudMode && supabaseClient) {
+        const { error } = await supabaseClient.from('voters').insert([currentVoter]);
+        if (error) {
+            console.error('Error saving voter:', error);
+            showModal('Error', 'Failed to register voter: ' + error.message);
+            return;
         }
+    } else {
+        voters.push(currentVoter);
+        saveLocalData();
+    }
 
-        // Project Display - Only shows configured projects
-        function renderAll() {
-            CATEGORIES.forEach(cat => {
-                renderCategory(cat);
-            });
-        }
+    localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
+    showVoterInfo();
+    updateStats();
+    showModal('Welcome!', 'Hello ' + name + '! You are now registered and can vote.');
+}
 
-        function renderCategory(category) {
-            const grid = document.getElementById(`grid-${category}`);
-            if (!grid) return;
-            
-            grid.innerHTML = '';
-            const catProjects = projects[category] || [];
-            
-            const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '');
-            
-            if (activeProjects.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1;">
-                        <h3>📭 No Projects Yet</h3>
-                        <p>Admin needs to add projects to this category.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            activeProjects.forEach(project => {
-                const card = createProjectCard(project);
-                grid.appendChild(card);
-            });
-        }
+function showVoterInfo() {
+    document.getElementById('registrationForm').classList.add('hidden');
+    document.getElementById('voterInfo').classList.remove('hidden');
+    document.getElementById('registeredName').textContent = currentVoter.name;
+    document.getElementById('registeredId').textContent = currentVoter.university_id;
+}
 
-        function createProjectCard(project) {
-            const card = document.createElement('div');
-            card.className = 'project-card';
-            
-            const hasVoted = currentVoter && localStorage.getItem(`voted_${currentVoter.id}_${project.category}`) === project.id;
-            const voteCount = votes[project.category]?.[project.id] || 0;
-            
-            let imageHtml;
-            if (project.image) {
-                imageHtml = `<img src="${project.image}" alt="${project.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'padding: 20px;\\'>📷 No Image</div>'">`;
-            } else {
-                imageHtml = `<div style="padding: 20px; text-align: center; color: #666;">📷<br>No Image</div>`;
-            }
-            
-            const canVote = isVotingActive && currentVoter && !hasVoted;
-            
-            card.innerHTML = `
-                <div class="project-image">
-                    ${imageHtml}
-                </div>
-                <div class="project-info">
-                    <span class="project-id">${project.id}</span>
-                    <h3 class="project-name">${project.name}</h3>
-                    <div class="instructor-name">👨‍🏫 Instructor: ${project.instructor || 'Not specified'}</div>
-                    <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
-                        Section ${project.section}, Team ${project.team}
-                    </p>
-                    <button class="vote-btn ${hasVoted ? 'voted' : ''}" 
-                            onclick="vote('${project.category}', '${project.id}')" 
-                            ${!canVote ? 'disabled' : ''}>
-                        ${hasVoted ? '✓ Voted' : '🗳️ Vote'} 
-                        <span class="vote-count">${voteCount} votes</span>
-                    </button>
-                    ${!currentVoter ? '<p style="color: #e74c3c; font-size: 12px; margin-top: 8px;">Register to vote</p>' : ''}
-                </div>
-            `;
-            
-            return card;
-        }
+function logoutVoter() {
+    if (confirm('Are you sure you want to change voter?')) {
+        currentVoter = null;
+        localStorage.removeItem('currentVoter');
+        document.getElementById('registrationForm').classList.remove('hidden');
+        document.getElementById('voterInfo').classList.add('hidden');
+        document.getElementById('voterName').value = '';
+        document.getElementById('voterId').value = '';
+        document.getElementById('voterEmail').value = '';
+        document.getElementById('voterPhone').value = '';
+        renderAll();
+    }
+}
 
-        function switchTab(category) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            document.querySelectorAll('.category-section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(`section-${category}`).classList.add('active');
-        }
+// ==================== ADMIN FUNCTIONS ====================
+function loginAdmin() {
+    const password = document.getElementById('adminPassword').value;
+    if (password === ADMIN_PASSWORD) {
+        isAdmin = true;
+        document.getElementById('stopVoteBtn').classList.remove('hidden');
+        document.getElementById('startVoteBtn').classList.remove('hidden');
+        document.getElementById('showResultsBtn').classList.remove('hidden');
+        document.getElementById('setupBtn').classList.remove('hidden');
+        document.getElementById('votersBtn').classList.remove('hidden');
+        document.getElementById('resetBtn').classList.remove('hidden');
+        document.getElementById('adminPassword').classList.add('hidden');
+        event.target.classList.add('hidden');
+        showModal('Welcome Admin!', 'You have full control. All changes sync to the cloud.');
+    } else {
+        showModal('Error', 'Incorrect password!');
+    }
+}
 
-        function vote(category, projectId) {
-            if (!isVotingActive) {
-                showModal('Voting Closed', 'Voting is currently closed.');
-                return;
-            }
-            
-            if (!currentVoter) {
-                showModal('Registration Required', 'Please register before voting.');
-                return;
-            }
-            
-            const voteKey = `voted_${currentVoter.id}_${category}`;
-            const hasVoted = localStorage.getItem(voteKey);
-            
-            if (hasVoted) {
-                showModal('Already Voted', 'You have already voted in this category!');
-                return;
-            }
-            
-            if (!votes[category]) votes[category] = {};
-            votes[category][projectId] = (votes[category][projectId] || 0) + 1;
-            
-            localStorage.setItem(voteKey, projectId);
-            
-            if (!currentVoter.votedCategories) currentVoter.votedCategories = [];
-            currentVoter.votedCategories.push(category);
-            saveData();
-            
-            renderCategory(category);
-            updateStats();
-            
-            showModal('Success!', 'Your vote has been recorded! 🎉');
-        }
+async function stopVoting() {
+    isVotingActive = false;
+    if (isCloudMode && supabaseClient) {
+        await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: false, stopped_at: new Date().toISOString() } });
+    } else {
+        localStorage.setItem('votingStatus', 'stopped');
+    }
+    document.getElementById('adminStatus').textContent = 'Voting Stopped';
+    document.getElementById('adminStatus').className = 'status-badge status-stopped';
+    showVotingClosed();
+    showModal('Voting Stopped', 'Voting is now closed.');
+}
 
-        // Setup Functions
-        function showSetup() {
-            const grid = document.getElementById('setupGrid');
-            grid.innerHTML = '';
-            
-            CATEGORIES.forEach(cat => {
-                const div = document.createElement('div');
-                div.className = 'category-setup';
-                div.innerHTML = `
-                    <h3>${CATEGORY_NAMES[cat]}</h3>
-                    <div id="projects-${cat}"></div>
-                    <button class="add-btn" onclick="addProject('${cat}')">+ Add Project</button>
-                `;
-                grid.appendChild(div);
-                
-                const container = div.querySelector(`#projects-${cat}`);
-                const catProjects = projects[cat] || [];
-                
-                const displayCount = Math.max(catProjects.length, 5);
-                
-                for (let i = 0; i < displayCount; i++) {
-                    const p = catProjects[i] || {
-                        id: `${cat}-SEC1-TEAM1`,
-                        name: '',
-                        category: cat,
-                        section: '1',
-                        team: '1',
-                        instructor: '',
-                        image: null,
-                        members: [{name: '', id: ''}]
-                    };
-                    container.appendChild(createSetupItem(cat, i, p));
-                }
-            });
-            
-            document.getElementById('setupSection').classList.remove('hidden');
-        }
+async function startVoting() {
+    isVotingActive = true;
+    if (isCloudMode && supabaseClient) {
+        await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: true, started_at: new Date().toISOString() } });
+    } else {
+        localStorage.setItem('votingStatus', 'active');
+    }
+    document.getElementById('adminStatus').textContent = 'Voting Active';
+    document.getElementById('adminStatus').className = 'status-badge status-active';
+    document.getElementById('votingClosed').classList.add('hidden');
+    document.getElementById('categoryTabs').classList.remove('hidden');
+    document.getElementById('votingSections').classList.remove('hidden');
+    document.getElementById('resultsSection').classList.remove('active');
+    renderAll();
+    showModal('Voting Resumed', 'Voting is now open!');
+}
 
-        function createSetupItem(category, index, project) {
-            const div = document.createElement('div');
-            div.className = 'project-setup-item';
-            div.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <strong>Project #${index + 1}</strong>
-                    ${index > 0 ? `<button onclick="this.parentElement.parentElement.remove()" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Remove</button>` : ''}
-                </div>
-                <div class="form-group">
-                    <label>Project Name *</label>
-                    <input type="text" id="name-${category}-${index}" value="${project.name}" placeholder="Enter project name">
-                </div>
-                <div class="form-group">
-                    <label>Instructor Name *</label>
-                    <input type="text" id="instructor-${category}-${index}" value="${project.instructor || ''}" placeholder="Enter instructor name">
-                </div>
-                <div class="form-group">
-                    <label>Section Number / Name</label>
-                    <input type="text" id="sec-${category}-${index}" value="${project.section}" placeholder="e.g., 1, A, A1, Alpha">
-                </div>
-                <div class="form-group">
-                    <label>Team Number</label>
-                    <input type="number" id="team-${category}-${index}" value="${project.team}" min="1" placeholder="e.g., 1, 2, 3">
-                </div>
-                <div class="form-group">
-                    <label>Project Image</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="img-${category}-${index}" accept="image/*" onchange="previewImage(this, '${category}', ${index})" style="display: none;">
-                        <label class="file-input-label" for="img-${category}-${index}">
-                            📁 Click to upload image
-                        </label>
-                    </div>
-                    <img id="preview-${category}-${index}" class="image-preview ${project.image ? 'active' : ''}" src="${project.image || ''}">
-                </div>
-                <div class="form-group">
-                    <label>Team Members</label>
-                    <div id="members-${category}-${index}">
-                        ${(project.members || [{name: '', id: ''}]).map((m, mIdx) => `
-                            <div class="team-members-input">
-                                <input type="text" placeholder="Name" value="${m.name}" id="mname-${category}-${index}-${mIdx}">
-                                <input type="text" placeholder="University ID" value="${m.id}" id="mid-${category}-${index}-${mIdx}">
-                            </div>
-                        `).join('')}
-                    </div>
-                    <button class="add-btn" onclick="addMember('${category}', ${index})" style="font-size: 12px; padding: 5px 10px;">+ Add Member</button>
-                </div>
-            `;
-            return div;
-        }
+function showVotingClosed() {
+    document.getElementById('categoryTabs').classList.add('hidden');
+    document.getElementById('votingSections').classList.add('hidden');
+    document.getElementById('votingClosed').classList.remove('hidden');
+}
 
-        function previewImage(input, category, index) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById(`preview-${category}-${index}`);
-                    preview.src = e.target.result;
-                    preview.classList.add('active');
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+// ==================== PROJECT DISPLAY ====================
+function renderAll() {
+    CATEGORIES.forEach(cat => renderCategory(cat));
+}
 
-        function addMember(category, index) {
-            const container = document.getElementById(`members-${category}-${index}`);
-            const mIdx = container.children.length;
-            const div = document.createElement('div');
-            div.className = 'team-members-input';
-            div.innerHTML = `
-                <input type="text" placeholder="Name" id="mname-${category}-${index}-${mIdx}">
-                <input type="text" placeholder="University ID" id="mid-${category}-${index}-${mIdx}">
-            `;
-            container.appendChild(div);
-        }
+function renderCategory(category) {
+    const grid = document.getElementById('grid-' + category);
+    if (!grid) return;
 
-        function addProject(category) {
-            const container = document.getElementById(`projects-${category}`);
-            const idx = container.children.length;
-            const newProject = {
-                id: `${category}-SEC1-TEAM1`,
-                name: '',
-                category: category,
-                section: '1',
-                team: '1',
-                instructor: '',
-                image: null,
-                members: [{name: '', id: ''}]
-            };
-            container.appendChild(createSetupItem(category, idx, newProject));
-        }
+    grid.innerHTML = '';
+    const catProjects = projects[category] || [];
+    const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '');
 
-        function saveSetup() {
-            CATEGORIES.forEach(cat => {
-                const catProjects = [];
-                const items = document.querySelectorAll(`#projects-${cat} .project-setup-item`);
-                
-                items.forEach((item, idx) => {
-                    const name = document.getElementById(`name-${cat}-${idx}`)?.value.trim();
-                    
-                    if (!name) return;
-                    
-                    const instructor = document.getElementById(`instructor-${cat}-${idx}`)?.value.trim() || 'Not specified';
-                    const section = document.getElementById(`sec-${cat}-${idx}`)?.value.trim() || '1';
-                    const team = document.getElementById(`team-${cat}-${idx}`)?.value.trim() || '1';
-                    const preview = document.getElementById(`preview-${cat}-${idx}`);
-                    const image = preview?.classList.contains('active') ? preview.src : null;
-                    
-                    const members = [];
-                    const memberContainer = document.getElementById(`members-${cat}-${idx}`);
-                    if (memberContainer) {
-                        const rows = memberContainer.querySelectorAll('.team-members-input');
-                        rows.forEach((row, mIdx) => {
-                            const mName = document.getElementById(`mname-${cat}-${idx}-${mIdx}`)?.value.trim();
-                            const mId = document.getElementById(`mid-${cat}-${idx}-${mIdx}`)?.value.trim();
-                            if (mName || mId) {
-                                members.push({ name: mName || 'Unknown', id: mId || 'N/A' });
-                            }
-                        });
-                    }
-                    
-                    catProjects.push({
-                        id: `${cat}-SEC${section}-TEAM${team}`,
-                        name,
-                        instructor,
-                        category: cat,
-                        section,
-                        team,
-                        image,
-                        members: members.length > 0 ? members : [{name: 'Unknown', id: 'N/A'}]
-                    });
-                });
-                
-                projects[cat] = catProjects;
-                
-                if (!votes[cat]) votes[cat] = {};
-                catProjects.forEach(p => {
-                    if (!(p.id in votes[cat])) votes[cat][p.id] = 0;
-                });
-            });
-            
-            saveData();
-            renderAll();
-            document.getElementById('setupSection').classList.add('hidden');
-            updateStats();
-            showModal('Success!', 'Projects saved! Only configured projects will appear for voting.');
-        }
+    if (activeProjects.length === 0) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><h3>No Projects Yet</h3><p>Admin needs to add projects to this category.</p></div>';
+        return;
+    }
 
-        // Results and Ranking
-        function getRankSuffix(rank) {
-            if (rank === 1) return '1st';
-            if (rank === 2) return '2nd';
-            if (rank === 3) return '3rd';
-            return `${rank}th`;
-        }
+    activeProjects.forEach(project => {
+        grid.appendChild(createProjectCard(project));
+    });
+}
 
-        function getRankClass(rank) {
-            if (rank === 1) return 'winner';
-            if (rank === 2) return 'second';
-            if (rank === 3) return 'third';
-            return '';
-        }
+function createProjectCard(project) {
+    const card = document.createElement('div');
+    card.className = 'project-card';
 
-        function getRankBadgeClass(rank) {
-            if (rank === 1) return 'rank-1';
-            if (rank === 2) return 'rank-2';
-            if (rank === 3) return 'rank-3';
-            return 'rank-other';
-        }
+    const hasVoted = currentVoter && localStorage.getItem('voted_' + currentVoter.university_id + '_' + project.category) === project.id;
+    const voteCount = votes[project.category] ? (votes[project.category][project.id] || 0) : 0;
 
-        function showResults() {
-            const container = document.getElementById('winnersContainer');
-            const fullResults = document.getElementById('fullResults');
-            container.innerHTML = '';
-            fullResults.innerHTML = '';
-            
-            let resultsText = '🏆 IE PROJECTS VOTING RESULTS 🏆\n';
-            resultsText += `Generated: ${new Date().toLocaleString()}\n`;
-            resultsText += `Total Votes: ${getTotalVotes()}\n`;
-            resultsText += `Registered Voters: ${voters.length}\n\n`;
-            
-            CATEGORIES.forEach(cat => {
-                const catProjects = projects[cat] || [];
-                const catVotes = votes[cat] || {};
-                
-                const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '');
-                
-                if (activeProjects.length === 0) return;
-                
-                // Sort by votes descending
-                const sorted = [...activeProjects].sort((a, b) => 
-                    (catVotes[b.id] || 0) - (catVotes[a.id] || 0)
-                );
-                
-                // Find winner (1st place)
-                const winner = sorted[0];
-                const maxVotes = catVotes[winner.id] || 0;
-                
-                resultsText += `\n📊 ${CATEGORY_NAMES[cat]}\n`;
-                resultsText += `${'='.repeat(50)}\n`;
-                
-                // Display winner card with prominent project name, instructor, and members
-                if (winner) {
-                    const winnerCard = document.createElement('div');
-                    winnerCard.className = 'winner-card';
-                    winnerCard.innerHTML = `
-                        <div class="category-title">${CATEGORY_NAMES[cat]} Winner</div>
-                        <div class="project-title">${winner.name}</div>
-                        <div class="instructor">👨‍🏫 Instructor: ${winner.instructor || 'Not specified'}</div>
-                        <div class="team-meta">
-                            ${winner.id} | Section ${winner.section}, Team ${winner.team}
-                        </div>
-                        <div class="members-section">
-                            <h4>👥 Team Members</h4>
-                            ${winner.members.map(m => `
-                                <div class="member-row">
-                                    <span class="member-name">${m.name}</span>
-                                    <span class="member-id">${m.id}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div class="vote-count">
-                            <span>🗳️ ${maxVotes} votes</span>
-                        </div>
-                    `;
-                    container.appendChild(winnerCard);
-                    
-                    resultsText += `🥇 WINNER: ${winner.name}\n`;
-                    resultsText += `   Instructor: ${winner.instructor || 'N/A'}\n`;
-                    resultsText += `   ID: ${winner.id}\n`;
-                    resultsText += `   Votes: ${maxVotes}\n`;
-                    resultsText += `   Team Members:\n`;
-                    winner.members.forEach(m => {
-                        resultsText += `   - ${m.name} (${m.id})\n`;
-                    });
-                    resultsText += `\n`;
-                }
-                
-                // Full ranked results for category
-                const resultDiv = document.createElement('div');
-                resultDiv.className = 'result-category';
-                
-                const totalCatVotes = Object.values(catVotes).reduce((a, b) => a + b, 0);
-                
-                let resultsHtml = `<h4>📋 ${CATEGORY_NAMES[cat]} - Full Rankings</h4>`;
-                
-                sorted.forEach((p, idx) => {
-                    const v = catVotes[p.id] || 0;
-                    const pct = totalCatVotes > 0 ? (v / totalCatVotes * 100).toFixed(1) : 0;
-                    const rank = idx + 1;
-                    const rankSuffix = getRankSuffix(rank);
-                    const rankClass = getRankClass(rank);
-                    const badgeClass = getRankBadgeClass(rank);
-                    
-                    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
-                    
-                    resultsHtml += `
-                        <div class="result-item ${rankClass}">
-                            <div style="display: flex; align-items: center; flex: 1;">
-                                <span class="rank-badge ${badgeClass}">${rankSuffix}</span>
-                                <div class="result-info">
-                                    <div class="project-title">${medal} ${p.name}</div>
-                                    <div class="instructor">👨‍🏫 ${p.instructor || 'Not specified'}</div>
-                                    <div class="project-meta">${p.id} | Section ${p.section}, Team ${p.team}</div>
-                                </div>
-                            </div>
-                            <div class="result-votes">
-                                <div class="vote-number">${v}</div>
-                                <div class="vote-label">${pct}%</div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    if (rank > 1) {
-                        resultsText += `${medal} ${rankSuffix}: ${p.name} (${v} votes, ${pct}%)\n`;
-                        resultsText += `   Instructor: ${p.instructor || 'N/A'}\n`;
-                    }
-                });
-                
-                resultDiv.innerHTML = resultsHtml;
-                fullResults.appendChild(resultDiv);
-            });
-            
-            document.getElementById('resultsText').value = resultsText;
-            document.getElementById('resultsSection').classList.add('active');
-            document.getElementById('votingClosed').classList.add('hidden');
-            document.getElementById('categoryTabs').classList.add('hidden');
-            document.getElementById('votingSections').classList.add('hidden');
-        }
+    let imageHtml = project.image 
+        ? '<img src="' + project.image + '" alt="' + project.name + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<div style=padding:20px;text-align:center>📷 No Image</div>\'">'
+        : '<div style="padding:20px;text-align:center;color:#666">📷<br>No Image</div>';
 
-        function getTotalVotes() {
-            let total = 0;
-            CATEGORIES.forEach(cat => {
-                total += Object.values(votes[cat] || {}).reduce((a, b) => a + b, 0);
-            });
-            return total;
-        }
+    const canVote = isVotingActive && currentVoter && !hasVoted;
 
-        // Sharing Functions
-        function shareTelegram() {
-            const text = document.getElementById('resultsText').value;
-            const encoded = encodeURIComponent(text);
-            window.open(`https://t.me/share/url?url=&text=${encoded}`, '_blank');
-        }
+    card.innerHTML = 
+        '<div class="project-image">' + imageHtml + '</div>' +
+        '<div class="project-info">' +
+            '<span class="project-id">' + project.id + '</span>' +
+            '<h3 class="project-name">' + project.name + '</h3>' +
+            '<div class="instructor-name">👨‍🏫 Instructor: ' + (project.instructor || 'Not specified') + '</div>' +
+            '<p style="color:#666;font-size:14px;margin-bottom:10px">Section ' + project.section + ', Team ' + project.team + '</p>' +
+            '<button class="vote-btn ' + (hasVoted ? 'voted' : '') + '" onclick="vote(\'' + project.category + '\',\'' + project.id + '\')" ' + (canVote ? '' : 'disabled') + '>' +
+                (hasVoted ? '✓ Voted' : '🗳️ Vote') + 
+                ' <span class="vote-count">' + voteCount + ' votes</span>' +
+            '</button>' +
+            (currentVoter ? '' : '<p style="color:#e74c3c;font-size:12px;margin-top:8px">Register to vote</p>') +
+        '</div>';
 
-        function shareWhatsApp() {
-            const text = document.getElementById('resultsText').value;
-            const encoded = encodeURIComponent(text);
-            window.open(`https://web.whatsapp.com/send?text=${encoded}`, '_blank');
-        }
+    return card;
+}
 
-        function shareEmail() {
-            const text = document.getElementById('resultsText').value;
-            const subject = encodeURIComponent('IE Projects Voting Results');
-            const body = encodeURIComponent(text);
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
-        }
+function switchTab(category) {
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.category-section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById('section-' + category).classList.add('active');
+}
 
-        function copyResults() {
-            const textarea = document.getElementById('resultsText');
-            textarea.select();
-            document.execCommand('copy');
-            showModal('Copied!', 'Results copied to clipboard. You can paste anywhere.');
-        }
+async function vote(category, projectId) {
+    if (!isVotingActive) {
+        showModal('Voting Closed', 'Voting is currently closed.');
+        return;
+    }
 
-        // Voters List
-        function showVotersList() {
-            const container = document.getElementById('votersTable');
-            
-            if (voters.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #666;">No voters registered yet.</p>';
-            } else {
-                let html = `
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background: #667eea; color: white;">
-                                <th style="padding: 12px; text-align: left;">Name</th>
-                                <th style="padding: 12px; text-align: left;">University ID</th>
-                                <th style="padding: 12px; text-align: left;">Email</th>
-                                <th style="padding: 12px; text-align: left;">Phone</th>
-                                <th style="padding: 12px; text-align: left;">Voted</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                
-                voters.forEach((v, idx) => {
-                    const votedCount = v.votedCategories ? v.votedCategories.length : 0;
-                    html += `
-                        <tr style="background: ${idx % 2 === 0 ? '#f8f9fa' : 'white'};">
-                            <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${v.name}</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${v.universityId}</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${v.email || '-'}</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${v.phone || '-'}</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${votedCount}/4 categories</td>
-                        </tr>
-                    `;
-                });
-                
-                html += '</tbody></table>';
-                container.innerHTML = html;
-            }
-            
-            document.getElementById('votersListSection').classList.remove('hidden');
-        }
+    if (!currentVoter) {
+        showModal('Registration Required', 'Please register before voting.');
+        return;
+    }
 
-        // Utility Functions
-        function updateStats() {
-            let totalVotes = 0;
-            let totalProjects = 0;
-            
-            CATEGORIES.forEach(cat => {
-                const catProjects = projects[cat] || [];
-                const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '');
-                totalProjects += activeProjects.length;
-                
-                totalVotes += Object.values(votes[cat] || {}).reduce((a, b) => a + b, 0);
-            });
-            
-            document.getElementById('totalVotes').textContent = totalVotes;
-            document.getElementById('totalProjects').textContent = totalProjects;
-            document.getElementById('registeredVoters').textContent = voters.length;
-        }
+    const voteKey = 'voted_' + currentVoter.university_id + '_' + category;
+    if (localStorage.getItem(voteKey)) {
+        showModal('Already Voted', 'You have already voted in this category!');
+        return;
+    }
 
-        function resetAll() {
-            if (confirm('⚠️ WARNING: This will delete ALL data including projects, votes, and voters. Are you sure?')) {
-                localStorage.removeItem('votingData');
-                localStorage.removeItem('votingStatus');
-                localStorage.removeItem('currentVoter');
-                
-                for (let i = localStorage.length - 1; i >= 0; i--) {
-                    const key = localStorage.key(i);
-                    if (key && key.startsWith('voted_')) {
-                        localStorage.removeItem(key);
-                    }
-                }
-                
-                projects = {};
-                votes = {};
-                voters = [];
-                currentVoter = null;
-                isVotingActive = true;
-                
-                CATEGORIES.forEach(cat => {
-                    projects[cat] = [];
-                    votes[cat] = {};
-                });
-                
-                document.getElementById('adminStatus').textContent = 'Voting Active';
-                document.getElementById('adminStatus').className = 'status-badge status-active';
-                document.getElementById('votingClosed').classList.add('hidden');
-                document.getElementById('categoryTabs').classList.remove('hidden');
-                document.getElementById('votingSections').classList.remove('hidden');
-                document.getElementById('resultsSection').classList.remove('active');
-                document.getElementById('votersListSection').classList.add('hidden');
-                document.getElementById('setupSection').classList.add('hidden');
-                
-                document.getElementById('registrationForm').classList.remove('hidden');
-                document.getElementById('voterInfo').classList.add('hidden');
-                
-                renderAll();
-                updateStats();
-                showModal('Reset Complete', 'All data has been cleared.');
-            }
-        }
+    localStorage.setItem(voteKey, projectId);
 
-        function showModal(title, message) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalMessage').textContent = message;
-            document.getElementById('messageModal').classList.add('active');
-        }
+    if (isCloudMode && supabaseClient) {
+        const voteId = category + '_' + projectId;
+        const { data: existing } = await supabaseClient.from('votes').select('count').eq('id', voteId).single();
+        const newCount = (existing ? existing.count : 0) + 1;
 
-        function closeModal() {
-            document.getElementById('messageModal').classList.remove('active');
-        }
-
-        document.getElementById('messageModal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
+        const { error: voteError } = await supabaseClient.from('votes').upsert({ 
+            id: voteId, category: category, project_id: projectId, 
+            count: newCount, last_updated: new Date().toISOString() 
         });
 
-        // Initialize
-        init();
-    </script>
+        if (voteError) {
+            showModal('Error', 'Failed to record vote: ' + voteError.message);
+            return;
+        }
+
+        const updatedCategories = [...(currentVoter.voted_categories || []), category];
+        await supabaseClient.from('voters').update({ voted_categories: updatedCategories }).eq('university_id', currentVoter.university_id);
+        currentVoter.voted_categories = updatedCategories;
+        localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
+    } else {
+        if (!votes[category]) votes[category] = {};
+        votes[category][projectId] = (votes[category][projectId] || 0) + 1;
+        if (!currentVoter.voted_categories) currentVoter.voted_categories = [];
+        currentVoter.voted_categories.push(category);
+        saveLocalData();
+    }
+
+    renderCategory(category);
+    updateStats();
+    showModal('Success!', 'Your vote has been recorded!');
+}
+
+// ==================== SETUP FUNCTIONS ====================
+function showSetup() {
+    const grid = document.getElementById('setupGrid');
+    grid.innerHTML = '';
+
+    CATEGORIES.forEach(cat => {
+        const div = document.createElement('div');
+        div.className = 'category-setup';
+        div.innerHTML = '<h3>' + CATEGORY_NAMES[cat] + '</h3><div id="projects-' + cat + '"></div><button class="add-btn" onclick="addProject(\'' + cat + '\')">+ Add Project</button>';
+        grid.appendChild(div);
+
+        const container = div.querySelector('#projects-' + cat);
+        const catProjects = projects[cat] || [];
+        const displayCount = Math.max(catProjects.length, 5);
+
+        for (let i = 0; i < displayCount; i++) {
+            const p = catProjects[i] || { id: cat + '-SEC1-TEAM1', name: '', category: cat, section: '1', team: '1', instructor: '', image: null, members: [{name: '', id: ''}] };
+            container.appendChild(createSetupItem(cat, i, p));
+        }
+    });
+
+    document.getElementById('setupSection').classList.remove('hidden');
+}
+
+function createSetupItem(category, index, project) {
+    const div = document.createElement('div');
+    div.className = 'project-setup-item';
+    div.innerHTML = 
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
+            '<strong>Project #' + (index + 1) + '</strong>' +
+            (index > 0 ? '<button onclick="this.parentElement.parentElement.remove()" style="background:#e74c3c;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer">Remove</button>' : '') +
+        '</div>' +
+        '<div class="form-group"><label>Project Name *</label><input type="text" id="name-' + category + '-' + index + '" value="' + (project.name || '') + '" placeholder="Enter project name"></div>' +
+        '<div class="form-group"><label>Instructor Name *</label><input type="text" id="instructor-' + category + '-' + index + '" value="' + (project.instructor || '') + '" placeholder="Enter instructor name"></div>' +
+        '<div class="form-group"><label>Section Number / Name</label><input type="text" id="sec-' + category + '-' + index + '" value="' + (project.section || '1') + '" placeholder="e.g., 1, A, A1, Alpha"></div>' +
+        '<div class="form-group"><label>Team Number</label><input type="number" id="team-' + category + '-' + index + '" value="' + (project.team || '1') + '" min="1" placeholder="e.g., 1, 2, 3"></div>' +
+        '<div class="form-group"><label>Project Image</label><div class="file-input-wrapper"><input type="file" id="img-' + category + '-' + index + '" accept="image/*" onchange="previewImage(this,\'' + category + '\',' + index + ')" style="display:none"><label class="file-input-label" for="img-' + category + '-' + index + '">📁 Click to upload image</label></div><img id="preview-' + category + '-' + index + '" class="image-preview ' + (project.image ? 'active' : '') + '" src="' + (project.image || '') + '"></div>' +
+        '<div class="form-group"><label>Team Members</label><div id="members-' + category + '-' + index + '">' + (project.members || [{name: '', id: ''}]).map((m, mIdx) => '<div class="team-members-input"><input type="text" placeholder="Name" value="' + (m.name || '') + '" id="mname-' + category + '-' + index + '-' + mIdx + '"><input type="text" placeholder="University ID" value="' + (m.id || '') + '" id="mid-' + category + '-' + index + '-' + mIdx + '"></div>').join('') + '</div><button class="add-btn" onclick="addMember(\'' + category + '\',' + index + ')" style="font-size:12px;padding:5px 10px">+ Add Member</button></div>';
+    return div;
+}
+
+function previewImage(input, category, index) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('preview-' + category + '-' + index);
+            preview.src = e.target.result;
+            preview.classList.add('active');
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function addMember(category, index) {
+    const container = document.getElementById('members-' + category + '-' + index);
+    const mIdx = container.children.length;
+    const div = document.createElement('div');
+    div.className = 'team-members-input';
+    div.innerHTML = '<input type="text" placeholder="Name" id="mname-' + category + '-' + index + '-' + mIdx + '"><input type="text" placeholder="University ID" id="mid-' + category + '-' + index + '-' + mIdx + '">';
+    container.appendChild(div);
+}
+
+function addProject(category) {
+    const container = document.getElementById('projects-' + category);
+    const idx = container.children.length;
+    const newProject = { id: category + '-SEC1-TEAM1', name: '', category: category, section: '1', team: '1', instructor: '', image: null, members: [{name: '', id: ''}] };
+    container.appendChild(createSetupItem(category, idx, newProject));
+}
+
+async function saveSetup() {
+    const projectsToSave = [];
+
+    CATEGORIES.forEach(cat => {
+        const items = document.querySelectorAll('#projects-' + cat + ' .project-setup-item');
+        items.forEach((item, idx) => {
+            const nameEl = document.getElementById('name-' + cat + '-' + idx);
+            const name = nameEl ? nameEl.value.trim() : '';
+            if (!name) return;
+
+            const instructor = document.getElementById('instructor-' + cat + '-' + idx)?.value.trim() || 'Not specified';
+            const section = document.getElementById('sec-' + cat + '-' + idx)?.value.trim() || '1';
+            const team = document.getElementById('team-' + cat + '-' + idx)?.value.trim() || '1';
+            const preview = document.getElementById('preview-' + cat + '-' + idx);
+            const image = preview && preview.classList.contains('active') ? preview.src : null;
+
+            const members = [];
+            const memberContainer = document.getElementById('members-' + cat + '-' + idx);
+            if (memberContainer) {
+                const rows = memberContainer.querySelectorAll('.team-members-input');
+                rows.forEach((row, mIdx) => {
+                    const mNameEl = document.getElementById('mname-' + cat + '-' + idx + '-' + mIdx);
+                    const mIdEl = document.getElementById('mid-' + cat + '-' + idx + '-' + mIdx);
+                    const mName = mNameEl ? mNameEl.value.trim() : '';
+                    const mId = mIdEl ? mIdEl.value.trim() : '';
+                    if (mName || mId) members.push({ name: mName || 'Unknown', id: mId || 'N/A' });
+                });
+            }
+
+            const projectData = {
+                id: cat + '-SEC' + section + '-TEAM' + team,
+                name, instructor, category: cat, section, team, image,
+                members: members.length > 0 ? members : [{name: 'Unknown', id: 'N/A'}],
+                created_at: new Date().toISOString()
+            };
+            projectsToSave.push(projectData);
+
+            if (!isCloudMode) {
+                if (!projects[cat]) projects[cat] = [];
+                projects[cat].push(projectData);
+                if (!votes[cat]) votes[cat] = {};
+                votes[cat][projectData.id] = 0;
+            }
+        });
+    });
+
+    if (isCloudMode && supabaseClient) {
+        try {
+            await supabaseClient.from('projects').delete().neq('id', '');
+            await supabaseClient.from('votes').delete().neq('id', '');
+
+            for (const project of projectsToSave) {
+                await supabaseClient.from('projects').insert([{
+                    id: project.id, name: project.name, instructor: project.instructor,
+                    category: project.category, section: project.section, team: project.team,
+                    image: project.image, members: project.members, created_at: project.created_at
+                }]);
+                await supabaseClient.from('votes').insert([{
+                    id: project.category + '_' + project.id, category: project.category,
+                    project_id: project.id, count: 0, last_updated: new Date().toISOString()
+                }]);
+            }
+            showModal('Success!', 'Saved ' + projectsToSave.length + ' projects to cloud!');
+        } catch (e) {
+            showModal('Error', 'Failed to save: ' + e.message);
+            return;
+        }
+    } else {
+        saveLocalData();
+        showModal('Success!', 'Projects saved locally.');
+    }
+
+    document.getElementById('setupSection').classList.add('hidden');
+    renderAll();
+    updateStats();
+}
+
+// ==================== RESULTS AND RANKING ====================
+function getRankSuffix(rank) {
+    if (rank === 1) return '1st';
+    if (rank === 2) return '2nd';
+    if (rank === 3) return '3rd';
+    return rank + 'th';
+}
+
+function getRankClass(rank) {
+    if (rank === 1) return 'winner';
+    if (rank === 2) return 'second';
+    if (rank === 3) return 'third';
+    return '';
+}
+
+function getRankBadgeClass(rank) {
+    if (rank === 1) return 'rank-1';
+    if (rank === 2) return 'rank-2';
+    if (rank === 3) return 'rank-3';
+    return 'rank-other';
+}
+
+function showResults() {
+    const container = document.getElementById('winnersContainer');
+    const fullResults = document.getElementById('fullResults');
+    container.innerHTML = '';
+    fullResults.innerHTML = '';
+
+    let resultsText = '🏆 IE PROJECTS VOTING RESULTS 🏆\n';
+    resultsText += 'Generated: ' + new Date().toLocaleString() + '\n';
+    resultsText += 'Total Votes: ' + getTotalVotes() + '\n';
+    resultsText += 'Registered Voters: ' + voters.length + '\n\n';
+
+    CATEGORIES.forEach(cat => {
+        const catProjects = projects[cat] || [];
+        const catVotes = votes[cat] || {};
+        const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '');
+        if (activeProjects.length === 0) return;
+
+        const sorted = [...activeProjects].sort((a, b) => (catVotes[b.id] || 0) - (catVotes[a.id] || 0));
+        const winner = sorted[0];
+        const maxVotes = winner ? (catVotes[winner.id] || 0) : 0;
+
+        resultsText += '\n📊 ' + CATEGORY_NAMES[cat] + '\n';
+        resultsText += '='.repeat(50) + '\n';
+
+        if (winner) {
+            const winnerCard = document.createElement('div');
+            winnerCard.className = 'winner-card';
+
+            let membersHtml = '';
+            (winner.members || []).forEach(m => {
+                membersHtml += '<div class="member-row"><span class="member-name">' + (m.name || 'Unknown') + '</span><span class="member-id">' + (m.id || 'N/A') + '</span></div>';
+            });
+
+            winnerCard.innerHTML = 
+                '<div class="category-title">' + CATEGORY_NAMES[cat] + ' Winner</div>' +
+                '<div class="project-title">' + winner.name + '</div>' +
+                '<div class="instructor">👨‍🏫 Instructor: ' + (winner.instructor || 'Not specified') + '</div>' +
+                '<div class="team-meta">' + winner.id + ' | Section ' + winner.section + ', Team ' + winner.team + '</div>' +
+                '<div class="members-section"><h4>👥 Team Members</h4>' + membersHtml + '</div>' +
+                '<div class="vote-count"><span>🗳️ ' + maxVotes + ' votes</span></div>';
+
+            container.appendChild(winnerCard);
+
+            resultsText += '🥇 WINNER: ' + winner.name + '\n';
+            resultsText += '   Instructor: ' + (winner.instructor || 'N/A') + '\n';
+            resultsText += '   ID: ' + winner.id + '\n';
+            resultsText += '   Votes: ' + maxVotes + '\n';
+            resultsText += '   Team Members:\n';
+            (winner.members || []).forEach(m => {
+                resultsText += '   - ' + (m.name || 'Unknown') + ' (' + (m.id || 'N/A') + ')\n';
+            });
+            resultsText += '\n';
+        }
+
+        const resultDiv = document.createElement('div');
+        resultDiv.className = 'result-category';
+        const totalCatVotes = Object.values(catVotes).reduce((a, b) => a + b, 0);
+
+        let resultsHtml = '<h4>📋 ' + CATEGORY_NAMES[cat] + ' - Full Rankings</h4>';
+
+        sorted.forEach((p, idx) => {
+            const v = catVotes[p.id] || 0;
+            const pct = totalCatVotes > 0 ? (v / totalCatVotes * 100).toFixed(1) : 0;
+            const rank = idx + 1;
+            const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+
+            resultsHtml += 
+                '<div class="result-item ' + getRankClass(rank) + '">' +
+                    '<div style="display:flex;align-items:center;flex:1">' +
+                        '<span class="rank-badge ' + getRankBadgeClass(rank) + '">' + getRankSuffix(rank) + '</span>' +
+                        '<div class="result-info">' +
+                            '<div class="project-title">' + medal + ' ' + p.name + '</div>' +
+                            '<div class="instructor">👨‍🏫 ' + (p.instructor || 'Not specified') + '</div>' +
+                            '<div class="project-meta">' + p.id + ' | Section ' + p.section + ', Team ' + p.team + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="result-votes"><div class="vote-number">' + v + '</div><div class="vote-label">' + pct + '%</div></div>' +
+                '</div>';
+
+            if (rank > 1) {
+                resultsText += medal + ' ' + getRankSuffix(rank) + ': ' + p.name + ' (' + v + ' votes, ' + pct + '%)\n';
+                resultsText += '   Instructor: ' + (p.instructor || 'N/A') + '\n';
+            }
+        });
+
+        resultDiv.innerHTML = resultsHtml;
+        fullResults.appendChild(resultDiv);
+    });
+
+    document.getElementById('resultsText').value = resultsText;
+    document.getElementById('resultsSection').classList.add('active');
+    document.getElementById('votingClosed').classList.add('hidden');
+    document.getElementById('categoryTabs').classList.add('hidden');
+    document.getElementById('votingSections').classList.add('hidden');
+}
+
+function getTotalVotes() {
+    let total = 0;
+    CATEGORIES.forEach(cat => {
+        total += Object.values(votes[cat] || {}).reduce((a, b) => a + b, 0);
+    });
+    return total;
+}
+
+// ==================== SHARING ====================
+function shareTelegram() {
+    const text = document.getElementById('resultsText').value;
+    window.open('https://t.me/share/url?url=&text=' + encodeURIComponent(text), '_blank');
+}
+
+function shareWhatsApp() {
+    const text = document.getElementById('resultsText').value;
+    window.open('https://web.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank');
+}
+
+function shareEmail() {
+    const text = document.getElementById('resultsText').value;
+    window.location.href = 'mailto:?subject=' + encodeURIComponent('IE Projects Voting Results') + '&body=' + encodeURIComponent(text);
+}
+
+function copyResults() {
+    const textarea = document.getElementById('resultsText');
+    textarea.select();
+    document.execCommand('copy');
+    showModal('Copied!', 'Results copied to clipboard.');
+}
+
+// ==================== VOTERS LIST ====================
+function showVotersList() {
+    const container = document.getElementById('votersTable');
+    if (voters.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:#666">No voters registered yet.</p>';
+    } else {
+        let html = '<table style="width:100%;border-collapse:collapse"><thead><tr style="background:#667eea;color:white"><th style="padding:12px;text-align:left">Name</th><th style="padding:12px;text-align:left">University ID</th><th style="padding:12px;text-align:left">Email</th><th style="padding:12px;text-align:left">Phone</th><th style="padding:12px;text-align:left">Voted</th></tr></thead><tbody>';
+        voters.forEach((v, idx) => {
+            const votedCount = v.voted_categories ? v.voted_categories.length : 0;
+            html += '<tr style="background:' + (idx % 2 === 0 ? '#f8f9fa' : 'white') + '"><td style="padding:12px;border-bottom:1px solid #e0e0e0">' + (v.name || '') + '</td><td style="padding:12px;border-bottom:1px solid #e0e0e0">' + (v.university_id || '') + '</td><td style="padding:12px;border-bottom:1px solid #e0e0e0">' + (v.email || '-') + '</td><td style="padding:12px;border-bottom:1px solid #e0e0e0">' + (v.phone || '-') + '</td><td style="padding:12px;border-bottom:1px solid #e0e0e0">' + votedCount + '/4</td></tr>';
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+    document.getElementById('votersListSection').classList.remove('hidden');
+}
+
+// ==================== UTILITIES ====================
+function updateStats() {
+    let totalVotes = 0, totalProjects = 0;
+    CATEGORIES.forEach(cat => {
+        const activeProjects = (projects[cat] || []).filter(p => p.name && p.name.trim() !== '');
+        totalProjects += activeProjects.length;
+        totalVotes += Object.values(votes[cat] || {}).reduce((a, b) => a + b, 0);
+    });
+    document.getElementById('totalVotes').textContent = totalVotes;
+    document.getElementById('totalProjects').textContent = totalProjects;
+    document.getElementById('registeredVoters').textContent = voters.length;
+}
+
+async function resetAll() {
+    if (!confirm('⚠️ WARNING: This will delete ALL data. Are you sure?')) return;
+
+    if (isCloudMode && supabaseClient) {
+        try {
+            await supabaseClient.from('projects').delete().neq('id', '');
+            await supabaseClient.from('votes').delete().neq('id', '');
+            await supabaseClient.from('voters').delete().neq('university_id', '');
+            await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: true } });
+        } catch (e) { console.error('Reset error:', e); }
+    }
+
+    localStorage.removeItem('votingData');
+    localStorage.removeItem('votingStatus');
+    localStorage.removeItem('currentVoter');
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('voted_')) localStorage.removeItem(key);
+    }
+
+    projects = {}; votes = {}; voters = []; currentVoter = null; isVotingActive = true;
+    CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
+
+    document.getElementById('adminStatus').textContent = 'Voting Active';
+    document.getElementById('adminStatus').className = 'status-badge status-active';
+    document.getElementById('votingClosed').classList.add('hidden');
+    document.getElementById('categoryTabs').classList.remove('hidden');
+    document.getElementById('votingSections').classList.remove('hidden');
+    document.getElementById('resultsSection').classList.remove('active');
+    document.getElementById('votersListSection').classList.add('hidden');
+    document.getElementById('setupSection').classList.add('hidden');
+    document.getElementById('registrationForm').classList.remove('hidden');
+    document.getElementById('voterInfo').classList.add('hidden');
+
+    renderAll();
+    updateStats();
+    showModal('Reset Complete', 'All data has been cleared.');
+}
+
+function showModal(title, message) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalMessage').textContent = message;
+    document.getElementById('messageModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('messageModal').classList.remove('active');
+}
+
+document.getElementById('messageModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+</script>
 </body>
 </html>
