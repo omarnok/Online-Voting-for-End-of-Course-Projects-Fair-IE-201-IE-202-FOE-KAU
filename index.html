@@ -15,8 +15,8 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 .card h2{color:#333;margin-bottom:20px;display:flex;align-items:center;gap:10px}
 .form-group{margin-bottom:20px}
 .form-group label{display:block;margin-bottom:8px;font-weight:600;color:#555}
-.form-group input,.form-group textarea{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px}
-.form-group input:focus,.form-group textarea:focus{outline:none;border-color:#667eea}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:#667eea}
 .btn{padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:600;transition:all 0.3s;text-transform:uppercase;letter-spacing:0.5px;display:inline-flex;align-items:center;gap:8px}
 .btn-primary{background:#667eea;color:white}
 .btn-primary:hover{background:#5568d3;transform:translateY(-2px);box-shadow:0 5px 15px rgba(102,126,234,0.4)}
@@ -25,13 +25,13 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 .btn-danger{background:#e74c3c;color:white}
 .btn-warning{background:#f39c12;color:white}
 .btn-info{background:#3498db;color:white}
+.btn-sm{padding:6px 12px;font-size:13px}
 .status-badge{padding:8px 16px;border-radius:20px;font-weight:bold;font-size:14px}
 .status-active{background:#d4edda;color:#155724}
 .status-stopped{background:#f8d7da;color:#721c24}
 .sync-status{padding:8px 16px;border-radius:20px;font-weight:bold;font-size:13px;display:inline-flex;align-items:center;gap:6px}
 .sync-online{background:#d4edda;color:#155724}
 .sync-offline{background:#fff3cd;color:#856404}
-.sync-error{background:#f8d7da;color:#721c24}
 .tabs{display:flex;gap:10px;margin-bottom:30px;flex-wrap:wrap;justify-content:center}
 .tab{padding:15px 30px;background:rgba(255,255,255,0.9);border:none;border-radius:10px;cursor:pointer;font-size:16px;font-weight:600;color:#555;transition:all 0.3s;box-shadow:0 4px 6px rgba(0,0,0,0.1)}
 .tab.active{background:#fff;color:#667eea;border-bottom:4px solid #667eea}
@@ -116,10 +116,14 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 .loading-spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:white;animation:spin 1s ease-in-out infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .connecting-box{background:#e3f2fd;border:2px solid #2196f3;border-radius:10px;padding:20px;text-align:center;margin-bottom:20px}
-.connecting-box h3{color:#2196f3;margin-bottom:10px}
-@media(max-width:768px){.projects-grid{grid-template-columns:1fr}.setup-grid{grid-template-columns:1fr}header h1{font-size:1.8em}.winner-card .project-title{font-size:1.6em}.winner-card .member-row{flex-direction:column;align-items:flex-start;gap:5px}.result-item{flex-direction:column;align-items:flex-start;gap:10px}.result-votes{text-align:left;width:100%}}
+.csv-import-box{background:#f0f9ff;border:2px dashed #3498db;border-radius:10px;padding:20px;margin-bottom:20px;text-align:center}
+.csv-import-box h3{color:#3498db;margin-bottom:10px}
+.voter-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #e0e0e0}
+.voter-row:hover{background:#f8f9fa}
+.voter-actions{display:flex;gap:8px}
+.code-block{background:#2d2d2d;color:#f8f8f2;padding:15px;border-radius:8px;font-family:'Courier New',monospace;font-size:13px;overflow-x:auto;margin:10px 0;line-height:1.5}
+@media(max-width:768px){.projects-grid{grid-template-columns:1fr}.setup-grid{grid-template-columns:1fr}header h1{font-size:1.8em}.winner-card .project-title{font-size:1.6em}.winner-card .member-row{flex-direction:column;align-items:flex-start;gap:5px}.result-item{flex-direction:column;align-items:flex-start;gap:10px}.result-votes{text-align:left;width:100%}.voter-row{flex-direction:column;align-items:flex-start;gap:8px}}
 </style>
-<base target="_blank">
 </head>
 <body>
 <div class="container">
@@ -128,27 +132,25 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 <p>Cloud-Powered Real-Time Voting</p>
 </header>
 
-<!-- Connecting Screen (shown briefly while auto-connecting) -->
+<!-- Connecting Screen -->
 <div class="card" id="connectingCard">
 <div class="connecting-box">
 <h3>⚡ Connecting to Cloud...</h3>
 <p style="color:#666">Please wait while we connect to the database.</p>
-<div style="margin-top:15px">
-<span class="loading-spinner" style="border-color:#2196f3;border-top-color:white"></span>
-</div>
+<div style="margin-top:15px"><span class="loading-spinner" style="border-color:#2196f3;border-top-color:white"></span></div>
 <p id="connectStatus" style="margin-top:10px;color:#666;font-size:14px">Initializing...</p>
 </div>
 </div>
 
-<!-- Connection Failed Screen (only shown if auto-connect fails) -->
+<!-- Connection Failed -->
 <div class="card hidden" id="connectionFailedCard">
 <h2>⚠️ Connection Failed</h2>
-<p style="color:#666;margin-bottom:15px">Could not connect to the cloud database automatically.</p>
+<p style="color:#666;margin-bottom:15px">Could not connect to the cloud database.</p>
 <div style="background:#fff3cd;border:1px solid #f39c12;border-radius:8px;padding:15px;margin-bottom:15px;color:#856404">
 <strong>Possible reasons:</strong>
 <ul style="margin-top:8px;margin-left:20px">
-<li>Database tables not created yet (run SQL setup)</li>
-<li>Supabase project paused or deleted</li>
+<li>Database tables not created yet</li>
+<li>Supabase project paused</li>
 <li>Internet connection issue</li>
 </ul>
 </div>
@@ -170,7 +172,7 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 <div id="registrationForm">
 <div class="form-group"><label>Full Name *</label><input type="text" id="voterName" placeholder="Enter your full name"></div>
 <div class="form-group"><label>University ID *</label><input type="text" id="voterId" placeholder="Enter your university ID"></div>
-<div class="form-group"><label>Email</label><input type="email" id="voterEmail" placeholder="Enter your email (optional)"></div>
+<div class="form-group"><label>Email *</label><input type="email" id="voterEmail" placeholder="Enter your email"></div>
 <div class="form-group"><label>Phone Number</label><input type="tel" id="voterPhone" placeholder="Enter your phone (optional)"></div>
 <button class="btn btn-primary" onclick="registerVoter()">Register to Vote</button>
 </div>
@@ -191,15 +193,45 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 <button class="btn btn-success hidden" id="startVoteBtn" onclick="startVoting()">Resume Voting</button>
 <button class="btn btn-warning hidden" id="showResultsBtn" onclick="showResults()">Show Results</button>
 <button class="btn btn-primary hidden" id="setupBtn" onclick="showSetup()">Setup Projects</button>
+<button class="btn btn-info hidden" id="importBtn" onclick="showImport()">📥 Bulk Import</button>
 <button class="btn btn-info hidden" id="votersBtn" onclick="showVotersList()">View Voters</button>
 <button class="btn btn-danger hidden" id="resetBtn" onclick="resetAll()">Reset All</button>
 </div>
 </div>
 
+<!-- CSV Import Section -->
+<div class="card hidden" id="importSection">
+<h2>📥 Bulk Import Projects</h2>
+<div class="csv-import-box">
+<h3>Upload CSV File</h3>
+<p style="color:#666;margin-bottom:10px">Create an Excel file, save as CSV, and upload it here.</p>
+<div class="form-group">
+<input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleCSVUpload(this)">
+<label class="file-input-label" for="csvFile" style="background:white;border:2px dashed #3498db;color:#3498db">📁 Click to select CSV file</label>
+</div>
+</div>
+<div style="background:#f8f9fa;padding:15px;border-radius:8px;margin-bottom:15px">
+<h4 style="margin-bottom:10px">📋 CSV Format (required columns):</h4>
+<div class="code-block">category,name,instructor,section,team,members
+IE201-M,Smart Factory,Dr. Ahmed,A1,5,"[{name:'Ali',id:'201845'},{name:'Sara',id:'201923'}]"
+IE201-M,Auto Scheduler,Dr. Sara,B2,3,"[{name:'Khalid',id:'201856'}]"
+IE201-F,IoT Monitor,Dr. Fatima,A1,7,"[{name:'Noor',id:'201901'},{name:'Huda',id:'201912'}]"</div>
+<p style="color:#666;font-size:14px;margin-top:10px">
+<strong>category:</strong> IE201-M, IE201-F, IE202-M, or IE202-F<br>
+<strong>members:</strong> JSON array with name and id for each member<br>
+<strong>image:</strong> Optional - paste base64 or URL (leave empty for no image)
+</p>
+<a href="#" onclick="downloadSampleCSV();return false" style="color:#3498db">📥 Download Sample CSV</a>
+</div>
+<div id="csvPreview"></div>
+<button class="btn btn-success" style="width:100%" onclick="confirmCSVImport()">💾 Import All Projects</button>
+<button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="document.getElementById('importSection').classList.add('hidden')">← Back to Setup</button>
+</div>
+
 <!-- Setup Section -->
 <div class="card hidden" id="setupSection">
 <h2>⚙️ Project Setup</h2>
-<p style="margin-bottom:20px;color:#666">Add projects to each category. Section can include letters. Team is numbers only. Data syncs to all devices automatically.</p>
+<p style="margin-bottom:20px;color:#666">Add projects manually or use Bulk Import. Data syncs to all devices automatically.</p>
 <div class="setup-grid" id="setupGrid"></div>
 <button class="btn btn-success" style="width:100%;margin-top:20px" onclick="saveSetup()">💾 Save All Projects & Sync to Cloud</button>
 </div>
@@ -272,26 +304,11 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  CONFIGURATION - EDIT THESE BEFORE UPLOADING TO GITHUB
+//  CONFIGURATION - EDIT THESE BEFORE UPLOADING
 // ═══════════════════════════════════════════════════════════════
-// 
-//  STEP 1: Paste your Supabase URL below (from Project Settings → API)
-//  STEP 2: Paste your Supabase Anon Key below (from Project Settings → API)
-//  STEP 3: Save the file and upload to GitHub
-//
-//  After this, voters just open the link — no credentials needed!
-
-const SUPABASE_URL = 'https://skmxljjmtrfvrypkdgxt.supabase.co';      // ← REPLACE THIS
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrbXhsamptdHJmdnJ5cGtkZ3h0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjgwMTcsImV4cCI6MjA5Mzg0NDAxN30.66LSDWf4IBhcbIE74cqrKZH3qH0c525dOnWFclO2TAU';    // ← REPLACE THIS
-
-// ═══════════════════════════════════════════════════════════════
-//  ADMIN PASSWORD
-// ═══════════════════════════════════════════════════════════════
-const ADMIN_PASSWORD = 'admin123';
-
-// ═══════════════════════════════════════════════════════════════
-//  CATEGORIES
-// ═══════════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://skmxljjmtrfvrypkdgxt.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrbXhsamptdHJmdnJ5cGtkZ3h0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjgwMTcsImV4cCI6MjA5Mzg0NDAxN30.66LSDWf4IBhcbIE74cqrKZH3qH0c525dOnWFclO2TAU';
+const ADMIN_PASSWORD = 'A123z';
 const CATEGORIES = ['IE201-M', 'IE201-F', 'IE202-M', 'IE202-F'];
 const CATEGORY_NAMES = {
     'IE201-M': 'IE201 - Males',
@@ -311,6 +328,7 @@ let projects = {};
 let votes = {};
 let voters = [];
 let currentVoter = null;
+let csvData = [];
 
 CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
 
@@ -318,19 +336,16 @@ CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
 //  AUTO-CONNECT ON PAGE LOAD
 // ═══════════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', function() {
-    // Check if credentials are still default
     if (SUPABASE_URL.includes('YOUR_PROJECT_ID') || SUPABASE_KEY.includes('YOUR_ANON_KEY')) {
         document.getElementById('connectingCard').innerHTML = 
             '<div class="connecting-box" style="background:#f8d7da;border-color:#e74c3c">' +
             '<h3 style="color:#721c24">⚠️ Setup Required</h3>' +
-            '<p style="color:#721c24">The admin needs to enter Supabase credentials in the code before sharing this link.</p>' +
-            '<p style="color:#721c24;margin-top:10px;font-size:14px">Open this file in a text editor and replace SUPABASE_URL and SUPABASE_KEY at the top.</p>' +
-            '<button class="btn btn-success" style="margin-top:15px" onclick="useLocalMode()">Use Offline Mode Instead</button>' +
+            '<p style="color:#721c24">Admin needs to enter Supabase credentials in the code before sharing this link.</p>' +
+            '<p style="color:#721c24;margin-top:10px;font-size:14px">Open this file in a text editor and replace SUPABASE_URL and SUPABASE_KEY.</p>' +
+            '<button class="btn btn-success" style="margin-top:15px" onclick="useLocalMode()">Use Offline Mode</button>' +
             '</div>';
         return;
     }
-
-    // Try to auto-connect
     autoConnect();
 });
 
@@ -338,7 +353,6 @@ async function autoConnect() {
     const statusEl = document.getElementById('connectStatus');
     statusEl.textContent = 'Loading Supabase library...';
 
-    // Wait a moment for the library to load
     let attempts = 0;
     while (typeof supabase === 'undefined' && attempts < 20) {
         await new Promise(r => setTimeout(r, 100));
@@ -355,8 +369,6 @@ async function autoConnect() {
 
     try {
         supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        // Test connection
         const { data, error } = await supabaseClient.from('settings').select('*').limit(1);
 
         if (error) {
@@ -372,7 +384,6 @@ async function autoConnect() {
             return;
         }
 
-        // Success!
         isCloudMode = true;
         document.getElementById('connectingCard').classList.add('hidden');
         document.getElementById('connectionStatusCard').classList.remove('hidden');
@@ -382,12 +393,9 @@ async function autoConnect() {
         document.getElementById('categoryTabs').classList.remove('hidden');
 
         updateSyncStatus('online', '✓ Connected to Cloud');
-
-        // Load data
         await loadCloudData();
         setupRealtime();
 
-        // Load saved voter
         const savedVoter = localStorage.getItem('currentVoter');
         if (savedVoter) {
             currentVoter = JSON.parse(savedVoter);
@@ -420,10 +428,7 @@ function useLocalMode() {
 
 function updateSyncStatus(status, text) {
     const el = document.getElementById('syncStatus');
-    if (el) {
-        el.className = 'sync-status sync-' + status;
-        el.textContent = text;
-    }
+    if (el) { el.className = 'sync-status sync-' + status; el.textContent = text; }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -517,7 +522,7 @@ async function loadCloudSettings() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  LOCAL STORAGE
+//  LOCAL STORAGE FALLBACK
 // ═══════════════════════════════════════════════════════════════
 function loadLocalData() {
     const saved = localStorage.getItem('votingData');
@@ -535,7 +540,7 @@ function saveLocalData() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  VOTER REGISTRATION
+//  VOTER REGISTRATION (Email now mandatory)
 // ═══════════════════════════════════════════════════════════════
 async function registerVoter() {
     const name = document.getElementById('voterName').value.trim();
@@ -543,20 +548,47 @@ async function registerVoter() {
     const email = document.getElementById('voterEmail').value.trim();
     const phone = document.getElementById('voterPhone').value.trim();
 
-    if (!name || !id) { showModal('Error', 'Please enter your name and university ID.'); return; }
+    if (!name || !id || !email) {
+        showModal('Error', 'Please enter your name, university ID, and email. All three are required.');
+        return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showModal('Invalid Email', 'Please enter a valid email address (e.g., name@university.edu).');
+        return;
+    }
 
     const existing = voters.find(v => v.university_id === id);
-    if (existing) { showModal('Already Registered', 'This university ID is already registered.'); return; }
+    if (existing) {
+        showModal('Already Registered', 'This university ID is already registered.');
+        return;
+    }
 
-    currentVoter = { name, university_id: id, email, phone, voted_categories: [], registered_at: new Date().toISOString() };
+    currentVoter = {
+        name,
+        university_id: id,
+        email,
+        phone,
+        voted_categories: [],
+        registered_at: new Date().toISOString()
+    };
 
     if (isCloudMode && supabaseClient) {
         const { error } = await supabaseClient.from('voters').insert([currentVoter]);
-        if (error) { showModal('Error', 'Failed to register: ' + error.message); return; }
-    } else { voters.push(currentVoter); saveLocalData(); }
+        if (error) {
+            showModal('Error', 'Failed to register: ' + error.message);
+            return;
+        }
+    } else {
+        voters.push(currentVoter);
+        saveLocalData();
+    }
 
     localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
-    showVoterInfo(); updateStats();
+    showVoterInfo();
+    updateStats();
     showModal('Welcome!', 'Hello ' + name + '! You are now registered and can vote.');
 }
 
@@ -590,19 +622,24 @@ function loginAdmin() {
         document.getElementById('startVoteBtn').classList.remove('hidden');
         document.getElementById('showResultsBtn').classList.remove('hidden');
         document.getElementById('setupBtn').classList.remove('hidden');
+        document.getElementById('importBtn').classList.remove('hidden');
         document.getElementById('votersBtn').classList.remove('hidden');
         document.getElementById('resetBtn').classList.remove('hidden');
         document.getElementById('adminPassword').classList.add('hidden');
         event.target.classList.add('hidden');
-        showModal('Welcome Admin!', 'You have full control.');
-    } else { showModal('Error', 'Incorrect password!'); }
+        showModal('Welcome Admin!', 'You have full control. Use Bulk Import to add all projects at once from a CSV file.');
+    } else {
+        showModal('Error', 'Incorrect password!');
+    }
 }
 
 async function stopVoting() {
     isVotingActive = false;
     if (isCloudMode && supabaseClient) {
         await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: false, stopped_at: new Date().toISOString() } });
-    } else { localStorage.setItem('votingStatus', 'stopped'); }
+    } else {
+        localStorage.setItem('votingStatus', 'stopped');
+    }
     document.getElementById('adminStatus').textContent = 'Voting Stopped';
     document.getElementById('adminStatus').className = 'status-badge status-stopped';
     showVotingClosed();
@@ -613,7 +650,9 @@ async function startVoting() {
     isVotingActive = true;
     if (isCloudMode && supabaseClient) {
         await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: true, started_at: new Date().toISOString() } });
-    } else { localStorage.setItem('votingStatus', 'active'); }
+    } else {
+        localStorage.setItem('votingStatus', 'active');
+    }
     document.getElementById('adminStatus').textContent = 'Voting Active';
     document.getElementById('adminStatus').className = 'status-badge status-active';
     document.getElementById('votingClosed').classList.add('hidden');
@@ -628,6 +667,85 @@ function showVotingClosed() {
     document.getElementById('categoryTabs').classList.add('hidden');
     document.getElementById('votingSections').classList.add('hidden');
     document.getElementById('votingClosed').classList.remove('hidden');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  VOTE FUNCTION - Server-side duplicate prevention
+// ═══════════════════════════════════════════════════════════════
+async function vote(category, projectId) {
+    if (!isVotingActive) { showModal('Voting Closed', 'Voting is currently closed.'); return; }
+    if (!currentVoter) { showModal('Registration Required', 'Please register before voting.'); return; }
+
+    const voteKey = 'voted_' + currentVoter.university_id + '_' + category;
+
+    // Check localStorage first (fast)
+    if (localStorage.getItem(voteKey)) {
+        showModal('Already Voted', 'You have already voted in this category!');
+        return;
+    }
+
+    // Server-side duplicate check (prevents voting from multiple devices)
+    if (isCloudMode && supabaseClient) {
+        const { data: existingVote } = await supabaseClient
+            .from('vote_records')
+            .select('*')
+            .eq('voter_id', currentVoter.university_id)
+            .eq('category', category)
+            .single();
+
+        if (existingVote) {
+            localStorage.setItem(voteKey, existingVote.project_id);
+            showModal('Already Voted', 'You have already voted in this category! (tracked on server)');
+            return;
+        }
+    }
+
+    localStorage.setItem(voteKey, projectId);
+
+    if (isCloudMode && supabaseClient) {
+        const voteId = category + '_' + projectId;
+
+        // Record the vote with voter ID (prevents duplicates)
+        const { error: recordError } = await supabaseClient.from('vote_records').insert([{
+            voter_id: currentVoter.university_id,
+            category: category,
+            project_id: projectId,
+            voted_at: new Date().toISOString()
+        }]);
+
+        if (recordError) {
+            // If duplicate key error, someone already voted
+            if (recordError.code === '23505') {
+                showModal('Already Voted', 'This university ID has already voted in this category.');
+                return;
+            }
+            console.error('Vote record error:', recordError);
+        }
+
+        // Increment vote count
+        const { data: existing } = await supabaseClient.from('votes').select('count').eq('id', voteId).single();
+        const newCount = (existing ? existing.count : 0) + 1;
+        const { error: voteError } = await supabaseClient.from('votes').upsert({ 
+            id: voteId, category: category, project_id: projectId, 
+            count: newCount, last_updated: new Date().toISOString() 
+        });
+        if (voteError) { showModal('Error', 'Failed to record vote: ' + voteError.message); return; }
+
+        // Update voter record
+        const updatedCategories = [...(currentVoter.voted_categories || []), category];
+        await supabaseClient.from('voters').update({ voted_categories: updatedCategories }).eq('university_id', currentVoter.university_id);
+        currentVoter.voted_categories = updatedCategories;
+        localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
+    } else {
+        if (!votes[category]) votes[category] = {};
+        votes[category][projectId] = (votes[category][projectId] || 0) + 1;
+        if (!currentVoter.voted_categories) currentVoter.voted_categories = [];
+        currentVoter.voted_categories.push(category);
+        saveLocalData();
+    }
+
+    renderCategory(category); updateStats();
+    showModal('Success!', 'Your vote has been recorded!');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -679,41 +797,189 @@ function switchTab(category) {
     document.getElementById('section-' + category).classList.add('active');
 }
 
-async function vote(category, projectId) {
-    if (!isVotingActive) { showModal('Voting Closed', 'Voting is currently closed.'); return; }
-    if (!currentVoter) { showModal('Registration Required', 'Please register before voting.'); return; }
-    const voteKey = 'voted_' + currentVoter.university_id + '_' + category;
-    if (localStorage.getItem(voteKey)) { showModal('Already Voted', 'You have already voted in this category!'); return; }
-    localStorage.setItem(voteKey, projectId);
+// ═══════════════════════════════════════════════════════════════
+//  CSV BULK IMPORT
+// ═══════════════════════════════════════════════════════════════
+function showImport() {
+    document.getElementById('importSection').classList.remove('hidden');
+    document.getElementById('setupSection').classList.add('hidden');
+}
+
+function downloadSampleCSV() {
+    const csvContent = 'category,name,instructor,section,team,members\n' +
+        'IE201-M,Smart Factory System,Dr. Ahmed Khalid,A1,5,"[{name:\'Mohammed Ali\',id:\'201845\'},{name:\'Sara Ahmed\',id:\'201923\'},{name:\'Khalid Omar\',id:\'201856\'}]"\n' +
+        'IE201-M,Auto Scheduler,Dr. Sara Omar,B2,3,"[{name:\'Fatima Hassan\',id:\'201901\'},{name:\'Omar Khaled\',id:\'201912\'}]"\n' +
+        'IE201-F,IoT Monitor,Dr. Fatima Ali,A1,7,"[{name:\'Noor Salem\',id:\'201934\'},{name:\'Huda Kareem\',id:\'201945\'}]"\n' +
+        'IE202-M,Quality Control AI,Dr. Khalid Hassan,C1,2,"[{name:\'Yusuf Mahmoud\',id:\'202011\'},{name:\'Aisha Farid\',id:\'202022\'}]"\n' +
+        'IE202-F,Supply Chain Optimizer,Dr. Layla Mahmoud,A2,9,"[{name:\'Rania Tarek\',id:\'202033\'}]"';
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sample-projects.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function handleCSVUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const text = e.target.result;
+        parseCSV(text);
+    };
+    reader.readAsText(file);
+}
+
+function parseCSV(text) {
+    csvData = [];
+    const lines = text.split('\n').filter(line => line.trim() !== '');
+    if (lines.length < 2) {
+        showModal('Error', 'CSV file is empty or invalid.');
+        return;
+    }
+
+    // Parse header
+    const headers = parseCSVLine(lines[0]);
+
+    // Parse data rows
+    for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i]);
+        if (values.length < 5) continue;
+
+        const row = {};
+        headers.forEach((h, idx) => { row[h.trim()] = values[idx] ? values[idx].trim() : ''; });
+
+        // Parse members JSON
+        let members = [{name: 'Unknown', id: 'N/A'}];
+        if (row.members) {
+            try {
+                const parsed = JSON.parse(row.members.replace(/'/g, '"'));
+                if (Array.isArray(parsed) && parsed.length > 0) members = parsed;
+            } catch(e) {
+                // Try alternative parsing
+                try {
+                    const parsed = eval('(' + row.members + ')');
+                    if (Array.isArray(parsed) && parsed.length > 0) members = parsed;
+                } catch(e2) {}
+            }
+        }
+
+        csvData.push({
+            id: (row.category || 'UNKNOWN') + '-SEC' + (row.section || '1') + '-TEAM' + (row.team || '1'),
+            name: row.name || '',
+            instructor: row.instructor || 'Not specified',
+            category: row.category || '',
+            section: row.section || '1',
+            team: row.team || '1',
+            image: row.image || null,
+            members: members,
+            created_at: new Date().toISOString()
+        });
+    }
+
+    // Show preview
+    const previewDiv = document.getElementById('csvPreview');
+    let previewHtml = '<h4 style="margin-bottom:15px">📋 Preview (' + csvData.length + ' projects)</h4>';
+    previewHtml += '<div style="max-height:300px;overflow-y:auto;border:1px solid #ddd;border-radius:8px">';
+    previewHtml += '<table style="width:100%;border-collapse:collapse;font-size:14px">';
+    previewHtml += '<thead><tr style="background:#667eea;color:white"><th style="padding:10px;text-align:left">Category</th><th style="padding:10px;text-align:left">Name</th><th style="padding:10px;text-align:left">Instructor</th><th style="padding:10px;text-align:left">Section</th><th style="padding:10px;text-align:left">Team</th><th style="padding:10px;text-align:left">Members</th></tr></thead><tbody>';
+
+    csvData.forEach((proj, idx) => {
+        const memberCount = proj.members ? proj.members.length : 0;
+        previewHtml += '<tr style="background:' + (idx % 2 === 0 ? '#f8f9fa' : 'white') + '"><td style="padding:10px;border-bottom:1px solid #e0e0e0">' + proj.category + '</td><td style="padding:10px;border-bottom:1px solid #e0e0e0">' + proj.name + '</td><td style="padding:10px;border-bottom:1px solid #e0e0e0">' + proj.instructor + '</td><td style="padding:10px;border-bottom:1px solid #e0e0e0">' + proj.section + '</td><td style="padding:10px;border-bottom:1px solid #e0e0e0">' + proj.team + '</td><td style="padding:10px;border-bottom:1px solid #e0e0e0">' + memberCount + ' members</td></tr>';
+    });
+
+    previewHtml += '</tbody></table></div>';
+    previewDiv.innerHTML = previewHtml;
+}
+
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current.trim());
+    return result;
+}
+
+async function confirmCSVImport() {
+    if (csvData.length === 0) {
+        showModal('Error', 'No data to import. Please upload a CSV file first.');
+        return;
+    }
+
+    if (!confirm('Import ' + csvData.length + ' projects? This will replace all existing projects.')) return;
 
     if (isCloudMode && supabaseClient) {
-        const voteId = category + '_' + projectId;
-        const { data: existing } = await supabaseClient.from('votes').select('count').eq('id', voteId).single();
-        const newCount = (existing ? existing.count : 0) + 1;
-        const { error: voteError } = await supabaseClient.from('votes').upsert({ 
-            id: voteId, category: category, project_id: projectId, 
-            count: newCount, last_updated: new Date().toISOString() 
-        });
-        if (voteError) { showModal('Error', 'Failed to record vote: ' + voteError.message); return; }
-        const updatedCategories = [...(currentVoter.voted_categories || []), category];
-        await supabaseClient.from('voters').update({ voted_categories: updatedCategories }).eq('university_id', currentVoter.university_id);
-        currentVoter.voted_categories = updatedCategories;
-        localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
+        try {
+            // Clear existing data
+            await supabaseClient.from('projects').delete().neq('id', '');
+            await supabaseClient.from('votes').delete().neq('id', '');
+            await supabaseClient.from('vote_records').delete().neq('id', '');
+
+            // Insert new projects
+            for (const project of csvData) {
+                if (!CATEGORIES.includes(project.category)) continue;
+
+                await supabaseClient.from('projects').insert([{
+                    id: project.id, name: project.name, instructor: project.instructor,
+                    category: project.category, section: project.section, team: project.team,
+                    image: project.image, members: project.members, created_at: project.created_at
+                }]);
+
+                await supabaseClient.from('votes').insert([{
+                    id: project.category + '_' + project.id, category: project.category,
+                    project_id: project.id, count: 0, last_updated: new Date().toISOString()
+                }]);
+            }
+
+            showModal('Success!', 'Imported ' + csvData.length + ' projects successfully!');
+            document.getElementById('importSection').classList.add('hidden');
+            csvData = [];
+            document.getElementById('csvPreview').innerHTML = '';
+            document.getElementById('csvFile').value = '';
+
+        } catch (e) {
+            showModal('Error', 'Import failed: ' + e.message);
+        }
     } else {
-        if (!votes[category]) votes[category] = {};
-        votes[category][projectId] = (votes[category][projectId] || 0) + 1;
-        if (!currentVoter.voted_categories) currentVoter.voted_categories = [];
-        currentVoter.voted_categories.push(category);
+        // Local mode
+        CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
+        csvData.forEach(project => {
+            if (!CATEGORIES.includes(project.category)) return;
+            if (!projects[project.category]) projects[project.category] = [];
+            projects[project.category].push(project);
+            if (!votes[project.category]) votes[project.category] = {};
+            votes[project.category][project.id] = 0;
+        });
         saveLocalData();
+        showModal('Success!', 'Imported ' + csvData.length + ' projects locally!');
+        document.getElementById('importSection').classList.add('hidden');
+        csvData = [];
+        renderAll(); updateStats();
     }
-    renderCategory(category); updateStats();
-    showModal('Success!', 'Your vote has been recorded!');
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SETUP FUNCTIONS
+//  SETUP FUNCTIONS (Manual)
 // ═══════════════════════════════════════════════════════════════
 function showSetup() {
+    document.getElementById('importSection').classList.add('hidden');
     const grid = document.getElementById('setupGrid');
     grid.innerHTML = '';
     CATEGORIES.forEach(cat => {
@@ -802,18 +1068,17 @@ async function saveSetup() {
                     if (mName || mId) members.push({ name: mName || 'Unknown', id: mId || 'N/A' });
                 });
             }
-            const projectData = {
+            projectsToSave.push({
                 id: cat + '-SEC' + section + '-TEAM' + team,
                 name, instructor, category: cat, section, team, image,
                 members: members.length > 0 ? members : [{name: 'Unknown', id: 'N/A'}],
                 created_at: new Date().toISOString()
-            };
-            projectsToSave.push(projectData);
+            });
             if (!isCloudMode) {
                 if (!projects[cat]) projects[cat] = [];
-                projects[cat].push(projectData);
+                projects[cat].push(projectsToSave[projectsToSave.length - 1]);
                 if (!votes[cat]) votes[cat] = {};
-                votes[cat][projectData.id] = 0;
+                votes[cat][projectsToSave[projectsToSave.length - 1].id] = 0;
             }
         });
     });
@@ -822,6 +1087,7 @@ async function saveSetup() {
         try {
             await supabaseClient.from('projects').delete().neq('id', '');
             await supabaseClient.from('votes').delete().neq('id', '');
+            await supabaseClient.from('vote_records').delete().neq('id', '');
             for (const project of projectsToSave) {
                 await supabaseClient.from('projects').insert([{
                     id: project.id, name: project.name, instructor: project.instructor,
@@ -843,6 +1109,165 @@ async function saveSetup() {
         showModal('Success!', 'Projects saved locally.');
     }
     document.getElementById('setupSection').classList.add('hidden');
+    renderAll(); updateStats();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  VOTER MANAGEMENT - With Vote Exclusion
+// ═══════════════════════════════════════════════════════════════
+async function showVotersList() {
+    const container = document.getElementById('votersTable');
+
+    // Load vote records to show what each voter voted for
+    let voteRecords = [];
+    if (isCloudMode && supabaseClient) {
+        const { data } = await supabaseClient.from('vote_records').select('*');
+        voteRecords = data || [];
+    }
+
+    if (voters.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:#666">No voters registered yet.</p>';
+    } else {
+        let html = '<div style="max-height:500px;overflow-y:auto">';
+
+        voters.forEach((v, idx) => {
+            const votedCount = v.voted_categories ? v.voted_categories.length : 0;
+            const voterVotes = voteRecords.filter(r => r.voter_id === v.university_id);
+
+            html += '<div class="voter-row">' +
+                '<div style="flex:1">' +
+                    '<strong>' + (v.name || '') + '</strong> (' + (v.university_id || '') + ')<br>' +
+                    '<small style="color:#666">' + (v.email || '') + ' | Voted: ' + votedCount + '/4 categories</small>';
+
+            // Show what they voted for
+            if (voterVotes.length > 0) {
+                html += '<div style="margin-top:5px;font-size:13px">';
+                voterVotes.forEach(vote => {
+                    html += '<span style="background:#e3f2fd;padding:2px 8px;border-radius:10px;margin-right:5px">' + 
+                        CATEGORY_NAMES[vote.category] + '</span>';
+                });
+                html += '</div>';
+            }
+
+            html += '</div>' +
+                '<div class="voter-actions">';
+
+            // Show exclude buttons for each vote
+            if (isAdmin && voterVotes.length > 0) {
+                voterVotes.forEach(vote => {
+                    html += '<button class="btn btn-danger btn-sm" onclick="excludeVote(\'' + vote.voter_id + '\',\'' + vote.category + '\',\'' + vote.project_id + '\')">Remove ' + CATEGORY_NAMES[vote.category] + ' Vote</button>';
+                });
+            }
+
+            html += '</div></div>';
+        });
+
+        html += '</div>';
+        container.innerHTML = html;
+    }
+    document.getElementById('votersListSection').classList.remove('hidden');
+}
+
+async function excludeVote(voterId, category, projectId) {
+    if (!confirm('Are you sure you want to remove this voter\'s vote for ' + CATEGORY_NAMES[category] + '?')) return;
+
+    if (isCloudMode && supabaseClient) {
+        try {
+            // 1. Delete vote record
+            await supabaseClient.from('vote_records')
+                .delete()
+                .eq('voter_id', voterId)
+                .eq('category', category);
+
+            // 2. Decrement vote count
+            const voteId = category + '_' + projectId;
+            const { data: existing } = await supabaseClient.from('votes').select('count').eq('id', voteId).single();
+            const newCount = Math.max(0, (existing ? existing.count : 0) - 1);
+            await supabaseClient.from('votes').upsert({
+                id: voteId, category: category, project_id: projectId,
+                count: newCount, last_updated: new Date().toISOString()
+            });
+
+            // 3. Update voter's voted_categories
+            const { data: voter } = await supabaseClient.from('voters').select('voted_categories').eq('university_id', voterId).single();
+            if (voter && voter.voted_categories) {
+                let cats = typeof voter.voted_categories === 'string' ? JSON.parse(voter.voted_categories) : voter.voted_categories;
+                cats = (cats || []).filter(c => c !== category);
+                await supabaseClient.from('voters').update({ voted_categories: cats }).eq('university_id', voterId);
+            }
+
+            // 4. Clear localStorage for this voter (if it's the current device)
+            localStorage.removeItem('voted_' + voterId + '_' + category);
+
+            showModal('Success!', 'Vote removed successfully.');
+
+        } catch (e) {
+            showModal('Error', 'Failed to remove vote: ' + e.message);
+            return;
+        }
+    } else {
+        // Local mode
+        if (!votes[category]) votes[category] = {};
+        votes[category][projectId] = Math.max(0, (votes[category][projectId] || 0) - 1);
+        localStorage.removeItem('voted_' + voterId + '_' + category);
+        saveLocalData();
+        showModal('Success!', 'Vote removed locally.');
+    }
+
+    // Refresh displays
+    renderAll();
+    updateStats();
+    showVotersList();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RESET ALL - Properly clears Supabase
+// ═══════════════════════════════════════════════════════════════
+async function resetAll() {
+    if (!confirm('⚠️ WARNING: This will delete ALL data permanently (projects, votes, voters, vote records). Are you sure?')) return;
+
+    if (isCloudMode && supabaseClient) {
+        try {
+            // Delete ALL data from ALL tables
+            await supabaseClient.from('vote_records').delete().neq('id', '');
+            await supabaseClient.from('votes').delete().neq('id', '');
+            await supabaseClient.from('projects').delete().neq('id', '');
+            await supabaseClient.from('voters').delete().neq('university_id', '');
+            await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: true } });
+
+            showModal('Reset Complete', 'All cloud data has been cleared.');
+        } catch (e) {
+            console.error('Reset error:', e);
+            showModal('Error', 'Some data may not have been cleared: ' + e.message);
+        }
+    }
+
+    // Always clear localStorage
+    localStorage.removeItem('votingData');
+    localStorage.removeItem('votingStatus');
+    localStorage.removeItem('currentVoter');
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('voted_')) localStorage.removeItem(key);
+    }
+
+    // Reset state
+    projects = {}; votes = {}; voters = []; currentVoter = null; isVotingActive = true;
+    CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
+
+    // Reset UI
+    document.getElementById('adminStatus').textContent = 'Voting Active';
+    document.getElementById('adminStatus').className = 'status-badge status-active';
+    document.getElementById('votingClosed').classList.add('hidden');
+    document.getElementById('categoryTabs').classList.remove('hidden');
+    document.getElementById('votingSections').classList.remove('hidden');
+    document.getElementById('resultsSection').classList.remove('active');
+    document.getElementById('votersListSection').classList.add('hidden');
+    document.getElementById('setupSection').classList.add('hidden');
+    document.getElementById('importSection').classList.add('hidden');
+    document.getElementById('registrationForm').classList.remove('hidden');
+    document.getElementById('voterInfo').classList.add('hidden');
+
     renderAll(); updateStats();
 }
 
@@ -985,25 +1410,6 @@ function copyResults() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  VOTERS LIST
-// ═══════════════════════════════════════════════════════════════
-function showVotersList() {
-    const container = document.getElementById('votersTable');
-    if (voters.length === 0) {
-        container.innerHTML = '<p style="text-align:center;color:#666">No voters registered yet.</p>';
-    } else {
-        let html = '<table style="width:100%;border-collapse:collapse"><thead><tr style="background:#667eea;color:white"><th style="padding:12px;text-align:left">Name</th><th style="padding:12px;text-align:left">University ID</th><th style="padding:12px;text-align:left">Email</th><th style="padding:12px;text-align:left">Phone</th><th style="padding:12px;text-align:left">Voted</th></tr></thead><tbody>';
-        voters.forEach((v, idx) => {
-            const votedCount = v.voted_categories ? v.voted_categories.length : 0;
-            html += '<tr style="background:' + (idx % 2 === 0 ? '#f8f9fa' : 'white') + '"><td style="padding:12px;border-bottom:1px solid #e0e0e0">' + (v.name || '') + '</td><td style="padding:12px;border-bottom:1px solid #e0e0e0">' + (v.university_id || '') + '</td><td style="padding:12px;border-bottom:1px solid #e0e0e0">' + (v.email || '-') + '</td><td style="padding:12px;border-bottom:1px solid #e0e0e0">' + (v.phone || '-') + '</td><td style="padding:12px;border-bottom:1px solid #e0e0e0">' + votedCount + '/4</td></tr>';
-        });
-        html += '</tbody></table>';
-        container.innerHTML = html;
-    }
-    document.getElementById('votersListSection').classList.remove('hidden');
-}
-
-// ═══════════════════════════════════════════════════════════════
 //  UTILITIES
 // ═══════════════════════════════════════════════════════════════
 function updateStats() {
@@ -1016,39 +1422,6 @@ function updateStats() {
     document.getElementById('totalVotes').textContent = totalVotes;
     document.getElementById('totalProjects').textContent = totalProjects;
     document.getElementById('registeredVoters').textContent = voters.length;
-}
-
-async function resetAll() {
-    if (!confirm('⚠️ WARNING: This will delete ALL data. Are you sure?')) return;
-    if (isCloudMode && supabaseClient) {
-        try {
-            await supabaseClient.from('projects').delete().neq('id', '');
-            await supabaseClient.from('votes').delete().neq('id', '');
-            await supabaseClient.from('voters').delete().neq('university_id', '');
-            await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: true } });
-        } catch (e) { console.error('Reset error:', e); }
-    }
-    localStorage.removeItem('votingData');
-    localStorage.removeItem('votingStatus');
-    localStorage.removeItem('currentVoter');
-    for (let i = localStorage.length - 1; i >= 0; i--) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('voted_')) localStorage.removeItem(key);
-    }
-    projects = {}; votes = {}; voters = []; currentVoter = null; isVotingActive = true;
-    CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
-    document.getElementById('adminStatus').textContent = 'Voting Active';
-    document.getElementById('adminStatus').className = 'status-badge status-active';
-    document.getElementById('votingClosed').classList.add('hidden');
-    document.getElementById('categoryTabs').classList.remove('hidden');
-    document.getElementById('votingSections').classList.remove('hidden');
-    document.getElementById('resultsSection').classList.remove('active');
-    document.getElementById('votersListSection').classList.add('hidden');
-    document.getElementById('setupSection').classList.add('hidden');
-    document.getElementById('registrationForm').classList.remove('hidden');
-    document.getElementById('voterInfo').classList.add('hidden');
-    renderAll(); updateStats();
-    showModal('Reset Complete', 'All data has been cleared.');
 }
 
 function showModal(title, message) {
