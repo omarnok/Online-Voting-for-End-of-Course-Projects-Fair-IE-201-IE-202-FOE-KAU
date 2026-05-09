@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IE Projects Voting System - Supabase Cloud</title>
+<title>IE Projects Voting System</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
@@ -115,82 +115,52 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 .empty-state h3{font-size:1.5em;margin-bottom:10px;color:#333}
 .loading-spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:white;animation:spin 1s ease-in-out infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.supabase-config-box{background:#f8f9fa;border:2px dashed #3ecf8e;border-radius:10px;padding:20px;margin-bottom:20px}
-.supabase-config-box h3{color:#3ecf8e;margin-bottom:15px}
-.code-block{background:#2d2d2d;color:#f8f8f2;padding:15px;border-radius:8px;font-family:'Courier New',monospace;font-size:13px;overflow-x:auto;margin:10px 0;line-height:1.5}
-.debug-box{background:#fff3cd;border:2px solid #f39c12;border-radius:10px;padding:15px;margin:15px 0;color:#856404}
-.debug-box h4{color:#856404;margin-bottom:10px}
+.connecting-box{background:#e3f2fd;border:2px solid #2196f3;border-radius:10px;padding:20px;text-align:center;margin-bottom:20px}
+.connecting-box h3{color:#2196f3;margin-bottom:10px}
 @media(max-width:768px){.projects-grid{grid-template-columns:1fr}.setup-grid{grid-template-columns:1fr}header h1{font-size:1.8em}.winner-card .project-title{font-size:1.6em}.winner-card .member-row{flex-direction:column;align-items:flex-start;gap:5px}.result-item{flex-direction:column;align-items:flex-start;gap:10px}.result-votes{text-align:left;width:100%}}
 </style>
+<base target="_blank">
 </head>
 <body>
 <div class="container">
 <header>
 <h1>🏆 IE Projects Voting System</h1>
-<p>Supabase Cloud - Real-Time Sync</p>
+<p>Cloud-Powered Real-Time Voting</p>
 </header>
 
-<!-- Supabase Config Input -->
-<div class="card" id="supabaseConfigCard">
-<h2>⚡ Connect to Supabase</h2>
-<p style="margin-bottom:20px;color:#666">To enable real-time sync across all devices, enter your Supabase credentials below.</p>
-<div class="supabase-config-box">
-<h3>📋 Enter Your Supabase Credentials</h3>
-<div class="form-group">
-<label>Supabase URL (from Project Settings → API)</label>
-<input type="text" id="supabaseUrl" placeholder="https://abcdefgh12345678.supabase.co">
+<!-- Connecting Screen (shown briefly while auto-connecting) -->
+<div class="card" id="connectingCard">
+<div class="connecting-box">
+<h3>⚡ Connecting to Cloud...</h3>
+<p style="color:#666">Please wait while we connect to the database.</p>
+<div style="margin-top:15px">
+<span class="loading-spinner" style="border-color:#2196f3;border-top-color:white"></span>
 </div>
-<div class="form-group">
-<label>Supabase Anon Key (from Project Settings → API)</label>
-<input type="text" id="supabaseKey" placeholder="eyJhbGciOiJIUzI1NiIs...">
+<p id="connectStatus" style="margin-top:10px;color:#666;font-size:14px">Initializing...</p>
 </div>
-<button class="btn btn-primary" onclick="connectSupabase()">Connect to Supabase</button>
-<button class="btn btn-success" onclick="useLocalMode()">Use Offline Mode (No Sync)</button>
 </div>
 
-<div class="debug-box" id="debugBox" style="display:none">
-<h4>🔍 Debug Info</h4>
-<div id="debugContent"></div>
-<button class="btn btn-info" onclick="document.getElementById('debugBox').style.display='none'" style="margin-top:10px">Hide Debug</button>
+<!-- Connection Failed Screen (only shown if auto-connect fails) -->
+<div class="card hidden" id="connectionFailedCard">
+<h2>⚠️ Connection Failed</h2>
+<p style="color:#666;margin-bottom:15px">Could not connect to the cloud database automatically.</p>
+<div style="background:#fff3cd;border:1px solid #f39c12;border-radius:8px;padding:15px;margin-bottom:15px;color:#856404">
+<strong>Possible reasons:</strong>
+<ul style="margin-top:8px;margin-left:20px">
+<li>Database tables not created yet (run SQL setup)</li>
+<li>Supabase project paused or deleted</li>
+<li>Internet connection issue</li>
+</ul>
 </div>
-
-<div id="supabaseSetupSteps" style="margin-top:30px;display:none">
-<h3>🔧 How to Create Supabase Project (5 minutes)</h3>
-<ol style="line-height:2;color:#555">
-<li>Go to <a href="https://supabase.com" target="_blank" style="color:#667eea">Supabase.com</a> and click "Start your project"</li>
-<li>Sign up with Google or email</li>
-<li>Click "New Project" → Name it <code>IE-Voting</code></li>
-<li>Choose a strong database password → Click "Create new project"</li>
-<li>Wait 1-2 minutes for the project to be ready</li>
-<li>Go to <strong>Project Settings → API</strong> (in left sidebar)</li>
-<li>Copy the <strong>URL</strong> and <strong>anon/public</strong> key</li>
-<li>Paste them above and click "Connect"</li>
-</ol>
-<h4 style="margin-top:20px;color:#333">⚠️ Important: Run This SQL First</h4>
-<p style="color:#555;margin-bottom:10px">In the SQL Editor, run:</p>
-<div class="code-block">CREATE TABLE projects (id TEXT PRIMARY KEY, name TEXT NOT NULL, instructor TEXT, category TEXT NOT NULL, section TEXT, team TEXT, image TEXT, members JSONB DEFAULT '[]', created_at TIMESTAMPTZ DEFAULT NOW());
-CREATE TABLE votes (id TEXT PRIMARY KEY, category TEXT NOT NULL, project_id TEXT NOT NULL, count INTEGER DEFAULT 0, last_updated TIMESTAMPTZ DEFAULT NOW());
-CREATE TABLE voters (university_id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT, phone TEXT, voted_categories JSONB DEFAULT '[]', registered_at TIMESTAMPTZ DEFAULT NOW());
-CREATE TABLE settings (key TEXT PRIMARY KEY, value JSONB DEFAULT '{}');
-INSERT INTO settings (key, value) VALUES ('voting', '{"active": true}');
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE voters ENABLE ROW LEVEL SECURITY;
-ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow all" ON projects FOR ALL USING (true);
-CREATE POLICY "Allow all" ON votes FOR ALL USING (true);
-CREATE POLICY "Allow all" ON voters FOR ALL USING (true);
-CREATE POLICY "Allow all" ON settings FOR ALL USING (true);</div>
-<p style="color:#555;margin-top:15px"><strong>Then enable Realtime:</strong> Database → Replication → Source → Toggle ON all 4 tables</p>
-</div>
-<p style="margin-top:15px"><a href="#" onclick="toggleSetupSteps();return false" style="color:#667eea">📖 Show/Hide Full Setup Instructions</a></p>
+<button class="btn btn-success" onclick="useLocalMode()">Continue in Offline Mode</button>
+<button class="btn btn-primary" onclick="location.reload()">Retry Connection</button>
 </div>
 
 <!-- Connection Status -->
 <div class="card hidden" id="connectionStatusCard">
 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-<h2 style="margin:0">⚡ Cloud Status</h2>
-<span id="syncStatus" class="sync-status sync-offline">⚠ Offline Mode</span>
+<h2 style="margin:0">☁️ Cloud Status</h2>
+<span id="syncStatus" class="sync-status sync-offline">⚠ Offline</span>
 </div>
 </div>
 
@@ -301,8 +271,27 @@ CREATE POLICY "Allow all" ON settings FOR ALL USING (true);</div>
 </div>
 
 <script>
-// ==================== CONFIGURATION ====================
+// ═══════════════════════════════════════════════════════════════
+//  CONFIGURATION - EDIT THESE BEFORE UPLOADING TO GITHUB
+// ═══════════════════════════════════════════════════════════════
+// 
+//  STEP 1: Paste your Supabase URL below (from Project Settings → API)
+//  STEP 2: Paste your Supabase Anon Key below (from Project Settings → API)
+//  STEP 3: Save the file and upload to GitHub
+//
+//  After this, voters just open the link — no credentials needed!
+
+const SUPABASE_URL = 'https://skmxljjmtrfvrypkdgxt.supabase.co';      // ← REPLACE THIS
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrbXhsamptdHJmdnJ5cGtkZ3h0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjgwMTcsImV4cCI6MjA5Mzg0NDAxN30.66LSDWf4IBhcbIE74cqrKZH3qH0c525dOnWFclO2TAU';    // ← REPLACE THIS
+
+// ═══════════════════════════════════════════════════════════════
+//  ADMIN PASSWORD
+// ═══════════════════════════════════════════════════════════════
 const ADMIN_PASSWORD = 'admin123';
+
+// ═══════════════════════════════════════════════════════════════
+//  CATEGORIES
+// ═══════════════════════════════════════════════════════════════
 const CATEGORIES = ['IE201-M', 'IE201-F', 'IE202-M', 'IE202-F'];
 const CATEGORY_NAMES = {
     'IE201-M': 'IE201 - Males',
@@ -311,7 +300,9 @@ const CATEGORY_NAMES = {
     'IE202-F': 'IE202 - Females'
 };
 
-// ==================== STATE ====================
+// ═══════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════
 let isVotingActive = true;
 let isAdmin = false;
 let supabaseClient = null;
@@ -321,123 +312,103 @@ let votes = {};
 let voters = [];
 let currentVoter = null;
 
-// Initialize categories
 CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
 
-// ==================== DEBUG HELPERS ====================
-function showDebug(msg) {
-    const box = document.getElementById('debugBox');
-    const content = document.getElementById('debugContent');
-    if (box && content) {
-        content.innerHTML += '<p>' + msg + '</p>';
-        box.style.display = 'block';
-    }
-    console.log('[DEBUG]', msg);
-}
-
-function clearDebug() {
-    const content = document.getElementById('debugContent');
-    if (content) content.innerHTML = '';
-}
-
-// ==================== SUPABASE CONNECTION ====================
-function toggleSetupSteps() {
-    const el = document.getElementById('supabaseSetupSteps');
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-async function connectSupabase() {
-    clearDebug();
-    const url = document.getElementById('supabaseUrl').value.trim();
-    const key = document.getElementById('supabaseKey').value.trim();
-
-    if (!url || !key) {
-        showModal('Error', 'Please enter both Supabase URL and Anon Key.');
+// ═══════════════════════════════════════════════════════════════
+//  AUTO-CONNECT ON PAGE LOAD
+// ═══════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', function() {
+    // Check if credentials are still default
+    if (SUPABASE_URL.includes('YOUR_PROJECT_ID') || SUPABASE_KEY.includes('YOUR_ANON_KEY')) {
+        document.getElementById('connectingCard').innerHTML = 
+            '<div class="connecting-box" style="background:#f8d7da;border-color:#e74c3c">' +
+            '<h3 style="color:#721c24">⚠️ Setup Required</h3>' +
+            '<p style="color:#721c24">The admin needs to enter Supabase credentials in the code before sharing this link.</p>' +
+            '<p style="color:#721c24;margin-top:10px;font-size:14px">Open this file in a text editor and replace SUPABASE_URL and SUPABASE_KEY at the top.</p>' +
+            '<button class="btn btn-success" style="margin-top:15px" onclick="useLocalMode()">Use Offline Mode Instead</button>' +
+            '</div>';
         return;
     }
 
-    showDebug('Step 1: Got URL=' + url.substring(0, 30) + '... Key=' + key.substring(0, 20) + '...');
+    // Try to auto-connect
+    autoConnect();
+});
+
+async function autoConnect() {
+    const statusEl = document.getElementById('connectStatus');
+    statusEl.textContent = 'Loading Supabase library...';
+
+    // Wait a moment for the library to load
+    let attempts = 0;
+    while (typeof supabase === 'undefined' && attempts < 20) {
+        await new Promise(r => setTimeout(r, 100));
+        attempts++;
+    }
+
+    if (typeof supabase === 'undefined' || !supabase.createClient) {
+        statusEl.textContent = 'Library not loaded. Check internet.';
+        showConnectionFailed('Supabase library failed to load. Please check your internet connection and refresh.');
+        return;
+    }
+
+    statusEl.textContent = 'Connecting to database...';
 
     try {
-        // Check if supabase library loaded
-        if (typeof supabase === 'undefined' || !supabase.createClient) {
-            showDebug('ERROR: Supabase library not loaded! Check internet connection.');
-            showModal('Error', 'Supabase library failed to load. Please check your internet connection and refresh the page.');
-            return;
-        }
-        showDebug('Step 2: Supabase library detected ✓');
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Create client
-        supabaseClient = supabase.createClient(url, key);
-        showDebug('Step 3: Client created ✓');
-
-        // Test connection with a simple query
-        showDebug('Step 4: Testing connection...');
+        // Test connection
         const { data, error } = await supabaseClient.from('settings').select('*').limit(1);
 
         if (error) {
-            showDebug('Step 4 FAILED: ' + error.message + ' (code: ' + (error.code || 'none') + ')');
-
-            // Provide specific guidance based on error
-            let helpMsg = '';
-            if (error.message && error.message.includes('relation') && error.message.includes('does not exist')) {
-                helpMsg = '\n\nThe database tables do not exist yet.\nPlease run the SQL setup script first (see setup instructions).\nGo to Supabase → SQL Editor and run the CREATE TABLE commands.';
-            } else if (error.message && error.message.includes('Invalid API key')) {
-                helpMsg = '\n\nYour API key is incorrect.\nMake sure you copied the "anon/public" key (not the service_role key).\nGo to Project Settings → API in Supabase.';
-            } else if (error.message && error.message.includes('Failed to fetch')) {
-                helpMsg = '\n\nCannot connect to Supabase.\nCheck your internet connection and make sure the URL is correct.';
-            } else if (error.code === '42501' || error.message.includes('permission')) {
-                helpMsg = '\n\nPermission denied.\nMake sure you created the RLS policies in the SQL setup.\nThe policies should say "FOR ALL USING (true)".';
-            } else {
-                helpMsg = '\n\nUnexpected error. Please check:\n1. Tables are created (SQL Editor)\n2. RLS policies allow access\n3. URL and Key are correct\n4. Internet connection is working';
+            let msg = error.message;
+            if (msg.includes('relation') && msg.includes('does not exist')) {
+                msg = 'Database tables not found. Please run the SQL setup script in Supabase SQL Editor first.';
+            } else if (msg.includes('Invalid API key')) {
+                msg = 'Invalid API key. Please check your Supabase Anon Key.';
+            } else if (msg.includes('Failed to fetch')) {
+                msg = 'Cannot reach Supabase. Check internet connection and URL.';
             }
-
-            showModal('Connection Failed', error.message + helpMsg);
+            showConnectionFailed(msg);
             return;
         }
 
-        showDebug('Step 5: Connection test passed ✓');
+        // Success!
         isCloudMode = true;
-
-        // Hide config, show app
-        document.getElementById('supabaseConfigCard').classList.add('hidden');
+        document.getElementById('connectingCard').classList.add('hidden');
         document.getElementById('connectionStatusCard').classList.remove('hidden');
         document.getElementById('voterRegistration').classList.remove('hidden');
         document.getElementById('adminPanel').classList.remove('hidden');
         document.getElementById('statsBar').classList.remove('hidden');
         document.getElementById('categoryTabs').classList.remove('hidden');
 
-        updateSyncStatus('online', '✓ Connected to Supabase Cloud');
-        showDebug('Step 6: UI updated ✓');
+        updateSyncStatus('online', '✓ Connected to Cloud');
 
-        // Load all data
-        showDebug('Step 7: Loading data from cloud...');
+        // Load data
         await loadCloudData();
-        showDebug('Step 8: Data loaded ✓');
-
-        // Setup realtime
         setupRealtime();
-        showDebug('Step 9: Realtime subscriptions active ✓');
 
-        // Load local voter
+        // Load saved voter
         const savedVoter = localStorage.getItem('currentVoter');
         if (savedVoter) {
             currentVoter = JSON.parse(savedVoter);
             showVoterInfo();
         }
 
-        showModal('Success!', 'Connected to Supabase! All data will now sync across devices in real-time.\n\nYou can now setup projects and start voting.');
-
     } catch (e) {
-        showDebug('CRITICAL ERROR: ' + e.message);
-        console.error('Connection error:', e);
-        showModal('Critical Error', 'Something went wrong:\n' + e.message + '\n\nPlease check the browser console (F12) for more details.');
+        showConnectionFailed('Connection error: ' + e.message);
     }
+}
+
+function showConnectionFailed(msg) {
+    document.getElementById('connectingCard').classList.add('hidden');
+    document.getElementById('connectionFailedCard').classList.remove('hidden');
+    console.error('Connection failed:', msg);
 }
 
 function useLocalMode() {
     isCloudMode = false;
-    document.getElementById('supabaseConfigCard').classList.add('hidden');
+    document.getElementById('connectingCard').classList.add('hidden');
+    document.getElementById('connectionFailedCard').classList.add('hidden');
     document.getElementById('connectionStatusCard').classList.remove('hidden');
     document.getElementById('voterRegistration').classList.remove('hidden');
     document.getElementById('adminPanel').classList.remove('hidden');
@@ -445,7 +416,6 @@ function useLocalMode() {
     document.getElementById('categoryTabs').classList.remove('hidden');
     updateSyncStatus('offline', '⚠ Offline Mode - No Sync');
     loadLocalData();
-    showModal('Offline Mode', 'Running without cloud sync. Data is stored only on this device.');
 }
 
 function updateSyncStatus(status, text) {
@@ -456,32 +426,27 @@ function updateSyncStatus(status, text) {
     }
 }
 
-// ==================== REALTIME ====================
+// ═══════════════════════════════════════════════════════════════
+//  REALTIME
+// ═══════════════════════════════════════════════════════════════
 function setupRealtime() {
     if (!supabaseClient) return;
-
-    // Subscribe to all tables
     supabaseClient.channel('db-changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => { loadCloudProjects(); })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, () => { loadCloudVotes(); })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'voters' }, () => { loadCloudVoters(); })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, () => { loadCloudSettings(); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => loadCloudProjects())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, () => loadCloudVotes())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'voters' }, () => loadCloudVoters())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, () => loadCloudSettings())
         .subscribe((status) => {
-            console.log('Realtime status:', status);
-            if (status === 'SUBSCRIBED') {
-                updateSyncStatus('online', '✓ Live Sync Active');
-            } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-                updateSyncStatus('error', '✗ Sync Disconnected');
-            }
+            if (status === 'SUBSCRIBED') updateSyncStatus('online', '✓ Live Sync Active');
+            else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') updateSyncStatus('error', '✗ Sync Disconnected');
         });
 }
 
-// ==================== CLOUD DATA LOADING ====================
+// ═══════════════════════════════════════════════════════════════
+//  CLOUD DATA LOADING
+// ═══════════════════════════════════════════════════════════════
 async function loadCloudData() {
-    await loadCloudProjects();
-    await loadCloudVotes();
-    await loadCloudVoters();
-    await loadCloudSettings();
+    await Promise.all([loadCloudProjects(), loadCloudVotes(), loadCloudVoters(), loadCloudSettings()]);
     renderAll();
     updateStats();
 }
@@ -489,22 +454,15 @@ async function loadCloudData() {
 async function loadCloudProjects() {
     if (!supabaseClient) return;
     const { data, error } = await supabaseClient.from('projects').select('*');
-    if (error) { console.error('Projects load error:', error); return; }
-
+    if (error) { console.error('Projects error:', error); return; }
     const newProjects = {};
     CATEGORIES.forEach(cat => newProjects[cat] = []);
-
     (data || []).forEach(row => {
         const proj = { ...row };
-        if (typeof proj.members === 'string') {
-            try { proj.members = JSON.parse(proj.members); } catch(e) { proj.members = []; }
-        }
+        if (typeof proj.members === 'string') { try { proj.members = JSON.parse(proj.members); } catch(e) { proj.members = []; } }
         if (!proj.members) proj.members = [];
-        if (CATEGORIES.includes(proj.category)) {
-            newProjects[proj.category].push(proj);
-        }
+        if (CATEGORIES.includes(proj.category)) newProjects[proj.category].push(proj);
     });
-
     projects = newProjects;
     renderAll();
     updateStats();
@@ -513,16 +471,13 @@ async function loadCloudProjects() {
 async function loadCloudVotes() {
     if (!supabaseClient) return;
     const { data, error } = await supabaseClient.from('votes').select('*');
-    if (error) { console.error('Votes load error:', error); return; }
-
+    if (error) { console.error('Votes error:', error); return; }
     const newVotes = {};
     CATEGORIES.forEach(cat => newVotes[cat] = {});
-
     (data || []).forEach(row => {
         if (!newVotes[row.category]) newVotes[row.category] = {};
         newVotes[row.category][row.project_id] = row.count || 0;
     });
-
     votes = newVotes;
     renderAll();
     updateStats();
@@ -531,13 +486,10 @@ async function loadCloudVotes() {
 async function loadCloudVoters() {
     if (!supabaseClient) return;
     const { data, error } = await supabaseClient.from('voters').select('*');
-    if (error) { console.error('Voters load error:', error); return; }
-
+    if (error) { console.error('Voters error:', error); return; }
     voters = (data || []).map(row => {
         const v = { ...row };
-        if (typeof v.voted_categories === 'string') {
-            try { v.voted_categories = JSON.parse(v.voted_categories); } catch(e) { v.voted_categories = []; }
-        }
+        if (typeof v.voted_categories === 'string') { try { v.voted_categories = JSON.parse(v.voted_categories); } catch(e) { v.voted_categories = []; } }
         if (!v.voted_categories) v.voted_categories = [];
         return v;
     });
@@ -547,109 +499,64 @@ async function loadCloudVoters() {
 async function loadCloudSettings() {
     if (!supabaseClient) return;
     const { data, error } = await supabaseClient.from('settings').select('*').eq('key', 'voting').single();
-    if (error) { 
-        if (error.code !== 'PGRST116') console.error('Settings load error:', error);
-        return; 
-    }
-
+    if (error) { if (error.code !== 'PGRST116') console.error('Settings error:', error); return; }
     if (data && data.value) {
         const val = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
         isVotingActive = val.active !== false;
-
         const statusEl = document.getElementById('adminStatus');
         if (isVotingActive) {
-            statusEl.textContent = 'Voting Active';
-            statusEl.className = 'status-badge status-active';
+            statusEl.textContent = 'Voting Active'; statusEl.className = 'status-badge status-active';
             document.getElementById('votingClosed').classList.add('hidden');
             document.getElementById('categoryTabs').classList.remove('hidden');
             document.getElementById('votingSections').classList.remove('hidden');
         } else {
-            statusEl.textContent = 'Voting Stopped';
-            statusEl.className = 'status-badge status-stopped';
+            statusEl.textContent = 'Voting Stopped'; statusEl.className = 'status-badge status-stopped';
             showVotingClosed();
         }
     }
 }
 
-// ==================== LOCAL STORAGE ====================
+// ═══════════════════════════════════════════════════════════════
+//  LOCAL STORAGE
+// ═══════════════════════════════════════════════════════════════
 function loadLocalData() {
     const saved = localStorage.getItem('votingData');
-    if (saved) {
-        const data = JSON.parse(saved);
-        projects = data.projects || {};
-        votes = data.votes || {};
-        voters = data.voters || [];
-    }
-    CATEGORIES.forEach(cat => {
-        if (!projects[cat]) projects[cat] = [];
-        if (!votes[cat]) votes[cat] = {};
-    });
-
+    if (saved) { const data = JSON.parse(saved); projects = data.projects || {}; votes = data.votes || {}; voters = data.voters || []; }
+    CATEGORIES.forEach(cat => { if (!projects[cat]) projects[cat] = []; if (!votes[cat]) votes[cat] = {}; });
     const savedVoter = localStorage.getItem('currentVoter');
-    if (savedVoter) {
-        currentVoter = JSON.parse(savedVoter);
-        showVoterInfo();
-    }
-
+    if (savedVoter) { currentVoter = JSON.parse(savedVoter); showVoterInfo(); }
     const votingStatus = localStorage.getItem('votingStatus');
-    if (votingStatus === 'stopped') {
-        isVotingActive = false;
-        document.getElementById('adminStatus').textContent = 'Voting Stopped';
-        document.getElementById('adminStatus').className = 'status-badge status-stopped';
-    }
-
-    renderAll();
-    updateStats();
+    if (votingStatus === 'stopped') { isVotingActive = false; document.getElementById('adminStatus').textContent = 'Voting Stopped'; document.getElementById('adminStatus').className = 'status-badge status-stopped'; }
+    renderAll(); updateStats();
 }
 
 function saveLocalData() {
-    if (!isCloudMode) {
-        localStorage.setItem('votingData', JSON.stringify({ projects, votes, voters }));
-    }
+    if (!isCloudMode) localStorage.setItem('votingData', JSON.stringify({ projects, votes, voters }));
 }
 
-// ==================== VOTER REGISTRATION ====================
+// ═══════════════════════════════════════════════════════════════
+//  VOTER REGISTRATION
+// ═══════════════════════════════════════════════════════════════
 async function registerVoter() {
     const name = document.getElementById('voterName').value.trim();
     const id = document.getElementById('voterId').value.trim();
     const email = document.getElementById('voterEmail').value.trim();
     const phone = document.getElementById('voterPhone').value.trim();
 
-    if (!name || !id) {
-        showModal('Error', 'Please enter your name and university ID.');
-        return;
-    }
+    if (!name || !id) { showModal('Error', 'Please enter your name and university ID.'); return; }
 
     const existing = voters.find(v => v.university_id === id);
-    if (existing) {
-        showModal('Already Registered', 'This university ID is already registered.');
-        return;
-    }
+    if (existing) { showModal('Already Registered', 'This university ID is already registered.'); return; }
 
-    currentVoter = {
-        name,
-        university_id: id,
-        email,
-        phone,
-        voted_categories: [],
-        registered_at: new Date().toISOString()
-    };
+    currentVoter = { name, university_id: id, email, phone, voted_categories: [], registered_at: new Date().toISOString() };
 
     if (isCloudMode && supabaseClient) {
         const { error } = await supabaseClient.from('voters').insert([currentVoter]);
-        if (error) {
-            console.error('Error saving voter:', error);
-            showModal('Error', 'Failed to register voter: ' + error.message);
-            return;
-        }
-    } else {
-        voters.push(currentVoter);
-        saveLocalData();
-    }
+        if (error) { showModal('Error', 'Failed to register: ' + error.message); return; }
+    } else { voters.push(currentVoter); saveLocalData(); }
 
     localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
-    showVoterInfo();
-    updateStats();
+    showVoterInfo(); updateStats();
     showModal('Welcome!', 'Hello ' + name + '! You are now registered and can vote.');
 }
 
@@ -661,20 +568,20 @@ function showVoterInfo() {
 }
 
 function logoutVoter() {
-    if (confirm('Are you sure you want to change voter?')) {
-        currentVoter = null;
-        localStorage.removeItem('currentVoter');
-        document.getElementById('registrationForm').classList.remove('hidden');
-        document.getElementById('voterInfo').classList.add('hidden');
-        document.getElementById('voterName').value = '';
-        document.getElementById('voterId').value = '';
-        document.getElementById('voterEmail').value = '';
-        document.getElementById('voterPhone').value = '';
-        renderAll();
-    }
+    if (!confirm('Are you sure you want to change voter?')) return;
+    currentVoter = null; localStorage.removeItem('currentVoter');
+    document.getElementById('registrationForm').classList.remove('hidden');
+    document.getElementById('voterInfo').classList.add('hidden');
+    document.getElementById('voterName').value = '';
+    document.getElementById('voterId').value = '';
+    document.getElementById('voterEmail').value = '';
+    document.getElementById('voterPhone').value = '';
+    renderAll();
 }
 
-// ==================== ADMIN FUNCTIONS ====================
+// ═══════════════════════════════════════════════════════════════
+//  ADMIN FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
 function loginAdmin() {
     const password = document.getElementById('adminPassword').value;
     if (password === ADMIN_PASSWORD) {
@@ -687,19 +594,15 @@ function loginAdmin() {
         document.getElementById('resetBtn').classList.remove('hidden');
         document.getElementById('adminPassword').classList.add('hidden');
         event.target.classList.add('hidden');
-        showModal('Welcome Admin!', 'You have full control. All changes sync to the cloud.');
-    } else {
-        showModal('Error', 'Incorrect password!');
-    }
+        showModal('Welcome Admin!', 'You have full control.');
+    } else { showModal('Error', 'Incorrect password!'); }
 }
 
 async function stopVoting() {
     isVotingActive = false;
     if (isCloudMode && supabaseClient) {
         await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: false, stopped_at: new Date().toISOString() } });
-    } else {
-        localStorage.setItem('votingStatus', 'stopped');
-    }
+    } else { localStorage.setItem('votingStatus', 'stopped'); }
     document.getElementById('adminStatus').textContent = 'Voting Stopped';
     document.getElementById('adminStatus').className = 'status-badge status-stopped';
     showVotingClosed();
@@ -710,9 +613,7 @@ async function startVoting() {
     isVotingActive = true;
     if (isCloudMode && supabaseClient) {
         await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: true, started_at: new Date().toISOString() } });
-    } else {
-        localStorage.setItem('votingStatus', 'active');
-    }
+    } else { localStorage.setItem('votingStatus', 'active'); }
     document.getElementById('adminStatus').textContent = 'Voting Active';
     document.getElementById('adminStatus').className = 'status-badge status-active';
     document.getElementById('votingClosed').classList.add('hidden');
@@ -729,42 +630,33 @@ function showVotingClosed() {
     document.getElementById('votingClosed').classList.remove('hidden');
 }
 
-// ==================== PROJECT DISPLAY ====================
-function renderAll() {
-    CATEGORIES.forEach(cat => renderCategory(cat));
-}
+// ═══════════════════════════════════════════════════════════════
+//  PROJECT DISPLAY
+// ═══════════════════════════════════════════════════════════════
+function renderAll() { CATEGORIES.forEach(cat => renderCategory(cat)); }
 
 function renderCategory(category) {
     const grid = document.getElementById('grid-' + category);
     if (!grid) return;
-
     grid.innerHTML = '';
     const catProjects = projects[category] || [];
     const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '');
-
     if (activeProjects.length === 0) {
-        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><h3>No Projects Yet</h3><p>Admin needs to add projects to this category.</p></div>';
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><h3>📭 No Projects Yet</h3><p>Admin needs to add projects to this category.</p></div>';
         return;
     }
-
-    activeProjects.forEach(project => {
-        grid.appendChild(createProjectCard(project));
-    });
+    activeProjects.forEach(project => { grid.appendChild(createProjectCard(project)); });
 }
 
 function createProjectCard(project) {
     const card = document.createElement('div');
     card.className = 'project-card';
-
     const hasVoted = currentVoter && localStorage.getItem('voted_' + currentVoter.university_id + '_' + project.category) === project.id;
     const voteCount = votes[project.category] ? (votes[project.category][project.id] || 0) : 0;
-
     let imageHtml = project.image 
         ? '<img src="' + project.image + '" alt="' + project.name + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<div style=padding:20px;text-align:center>📷 No Image</div>\'">'
         : '<div style="padding:20px;text-align:center;color:#666">📷<br>No Image</div>';
-
     const canVote = isVotingActive && currentVoter && !hasVoted;
-
     card.innerHTML = 
         '<div class="project-image">' + imageHtml + '</div>' +
         '<div class="project-info">' +
@@ -773,12 +665,10 @@ function createProjectCard(project) {
             '<div class="instructor-name">👨‍🏫 Instructor: ' + (project.instructor || 'Not specified') + '</div>' +
             '<p style="color:#666;font-size:14px;margin-bottom:10px">Section ' + project.section + ', Team ' + project.team + '</p>' +
             '<button class="vote-btn ' + (hasVoted ? 'voted' : '') + '" onclick="vote(\'' + project.category + '\',\'' + project.id + '\')" ' + (canVote ? '' : 'disabled') + '>' +
-                (hasVoted ? '✓ Voted' : '🗳️ Vote') + 
-                ' <span class="vote-count">' + voteCount + ' votes</span>' +
+                (hasVoted ? '✓ Voted' : '🗳️ Vote') + ' <span class="vote-count">' + voteCount + ' votes</span>' +
             '</button>' +
             (currentVoter ? '' : '<p style="color:#e74c3c;font-size:12px;margin-top:8px">Register to vote</p>') +
         '</div>';
-
     return card;
 }
 
@@ -790,39 +680,21 @@ function switchTab(category) {
 }
 
 async function vote(category, projectId) {
-    if (!isVotingActive) {
-        showModal('Voting Closed', 'Voting is currently closed.');
-        return;
-    }
-
-    if (!currentVoter) {
-        showModal('Registration Required', 'Please register before voting.');
-        return;
-    }
-
+    if (!isVotingActive) { showModal('Voting Closed', 'Voting is currently closed.'); return; }
+    if (!currentVoter) { showModal('Registration Required', 'Please register before voting.'); return; }
     const voteKey = 'voted_' + currentVoter.university_id + '_' + category;
-    if (localStorage.getItem(voteKey)) {
-        showModal('Already Voted', 'You have already voted in this category!');
-        return;
-    }
-
+    if (localStorage.getItem(voteKey)) { showModal('Already Voted', 'You have already voted in this category!'); return; }
     localStorage.setItem(voteKey, projectId);
 
     if (isCloudMode && supabaseClient) {
         const voteId = category + '_' + projectId;
         const { data: existing } = await supabaseClient.from('votes').select('count').eq('id', voteId).single();
         const newCount = (existing ? existing.count : 0) + 1;
-
         const { error: voteError } = await supabaseClient.from('votes').upsert({ 
             id: voteId, category: category, project_id: projectId, 
             count: newCount, last_updated: new Date().toISOString() 
         });
-
-        if (voteError) {
-            showModal('Error', 'Failed to record vote: ' + voteError.message);
-            return;
-        }
-
+        if (voteError) { showModal('Error', 'Failed to record vote: ' + voteError.message); return; }
         const updatedCategories = [...(currentVoter.voted_categories || []), category];
         await supabaseClient.from('voters').update({ voted_categories: updatedCategories }).eq('university_id', currentVoter.university_id);
         currentVoter.voted_categories = updatedCategories;
@@ -834,33 +706,29 @@ async function vote(category, projectId) {
         currentVoter.voted_categories.push(category);
         saveLocalData();
     }
-
-    renderCategory(category);
-    updateStats();
+    renderCategory(category); updateStats();
     showModal('Success!', 'Your vote has been recorded!');
 }
 
-// ==================== SETUP FUNCTIONS ====================
+// ═══════════════════════════════════════════════════════════════
+//  SETUP FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
 function showSetup() {
     const grid = document.getElementById('setupGrid');
     grid.innerHTML = '';
-
     CATEGORIES.forEach(cat => {
         const div = document.createElement('div');
         div.className = 'category-setup';
         div.innerHTML = '<h3>' + CATEGORY_NAMES[cat] + '</h3><div id="projects-' + cat + '"></div><button class="add-btn" onclick="addProject(\'' + cat + '\')">+ Add Project</button>';
         grid.appendChild(div);
-
         const container = div.querySelector('#projects-' + cat);
         const catProjects = projects[cat] || [];
         const displayCount = Math.max(catProjects.length, 5);
-
         for (let i = 0; i < displayCount; i++) {
             const p = catProjects[i] || { id: cat + '-SEC1-TEAM1', name: '', category: cat, section: '1', team: '1', instructor: '', image: null, members: [{name: '', id: ''}] };
             container.appendChild(createSetupItem(cat, i, p));
         }
     });
-
     document.getElementById('setupSection').classList.remove('hidden');
 }
 
@@ -911,20 +779,17 @@ function addProject(category) {
 
 async function saveSetup() {
     const projectsToSave = [];
-
     CATEGORIES.forEach(cat => {
         const items = document.querySelectorAll('#projects-' + cat + ' .project-setup-item');
         items.forEach((item, idx) => {
             const nameEl = document.getElementById('name-' + cat + '-' + idx);
             const name = nameEl ? nameEl.value.trim() : '';
             if (!name) return;
-
             const instructor = document.getElementById('instructor-' + cat + '-' + idx)?.value.trim() || 'Not specified';
             const section = document.getElementById('sec-' + cat + '-' + idx)?.value.trim() || '1';
             const team = document.getElementById('team-' + cat + '-' + idx)?.value.trim() || '1';
             const preview = document.getElementById('preview-' + cat + '-' + idx);
             const image = preview && preview.classList.contains('active') ? preview.src : null;
-
             const members = [];
             const memberContainer = document.getElementById('members-' + cat + '-' + idx);
             if (memberContainer) {
@@ -937,7 +802,6 @@ async function saveSetup() {
                     if (mName || mId) members.push({ name: mName || 'Unknown', id: mId || 'N/A' });
                 });
             }
-
             const projectData = {
                 id: cat + '-SEC' + section + '-TEAM' + team,
                 name, instructor, category: cat, section, team, image,
@@ -945,7 +809,6 @@ async function saveSetup() {
                 created_at: new Date().toISOString()
             };
             projectsToSave.push(projectData);
-
             if (!isCloudMode) {
                 if (!projects[cat]) projects[cat] = [];
                 projects[cat].push(projectData);
@@ -959,7 +822,6 @@ async function saveSetup() {
         try {
             await supabaseClient.from('projects').delete().neq('id', '');
             await supabaseClient.from('votes').delete().neq('id', '');
-
             for (const project of projectsToSave) {
                 await supabaseClient.from('projects').insert([{
                     id: project.id, name: project.name, instructor: project.instructor,
@@ -980,13 +842,13 @@ async function saveSetup() {
         saveLocalData();
         showModal('Success!', 'Projects saved locally.');
     }
-
     document.getElementById('setupSection').classList.add('hidden');
-    renderAll();
-    updateStats();
+    renderAll(); updateStats();
 }
 
-// ==================== RESULTS AND RANKING ====================
+// ═══════════════════════════════════════════════════════════════
+//  RESULTS AND RANKING
+// ═══════════════════════════════════════════════════════════════
 function getRankSuffix(rank) {
     if (rank === 1) return '1st';
     if (rank === 2) return '2nd';
@@ -1035,12 +897,10 @@ function showResults() {
         if (winner) {
             const winnerCard = document.createElement('div');
             winnerCard.className = 'winner-card';
-
             let membersHtml = '';
             (winner.members || []).forEach(m => {
                 membersHtml += '<div class="member-row"><span class="member-name">' + (m.name || 'Unknown') + '</span><span class="member-id">' + (m.id || 'N/A') + '</span></div>';
             });
-
             winnerCard.innerHTML = 
                 '<div class="category-title">' + CATEGORY_NAMES[cat] + ' Winner</div>' +
                 '<div class="project-title">' + winner.name + '</div>' +
@@ -1048,7 +908,6 @@ function showResults() {
                 '<div class="team-meta">' + winner.id + ' | Section ' + winner.section + ', Team ' + winner.team + '</div>' +
                 '<div class="members-section"><h4>👥 Team Members</h4>' + membersHtml + '</div>' +
                 '<div class="vote-count"><span>🗳️ ' + maxVotes + ' votes</span></div>';
-
             container.appendChild(winnerCard);
 
             resultsText += '🥇 WINNER: ' + winner.name + '\n';
@@ -1065,7 +924,6 @@ function showResults() {
         const resultDiv = document.createElement('div');
         resultDiv.className = 'result-category';
         const totalCatVotes = Object.values(catVotes).reduce((a, b) => a + b, 0);
-
         let resultsHtml = '<h4>📋 ' + CATEGORY_NAMES[cat] + ' - Full Rankings</h4>';
 
         sorted.forEach((p, idx) => {
@@ -1073,7 +931,6 @@ function showResults() {
             const pct = totalCatVotes > 0 ? (v / totalCatVotes * 100).toFixed(1) : 0;
             const rank = idx + 1;
             const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
-
             resultsHtml += 
                 '<div class="result-item ' + getRankClass(rank) + '">' +
                     '<div style="display:flex;align-items:center;flex:1">' +
@@ -1086,13 +943,11 @@ function showResults() {
                     '</div>' +
                     '<div class="result-votes"><div class="vote-number">' + v + '</div><div class="vote-label">' + pct + '%</div></div>' +
                 '</div>';
-
             if (rank > 1) {
                 resultsText += medal + ' ' + getRankSuffix(rank) + ': ' + p.name + ' (' + v + ' votes, ' + pct + '%)\n';
                 resultsText += '   Instructor: ' + (p.instructor || 'N/A') + '\n';
             }
         });
-
         resultDiv.innerHTML = resultsHtml;
         fullResults.appendChild(resultDiv);
     });
@@ -1106,36 +961,32 @@ function showResults() {
 
 function getTotalVotes() {
     let total = 0;
-    CATEGORIES.forEach(cat => {
-        total += Object.values(votes[cat] || {}).reduce((a, b) => a + b, 0);
-    });
+    CATEGORIES.forEach(cat => { total += Object.values(votes[cat] || {}).reduce((a, b) => a + b, 0); });
     return total;
 }
 
-// ==================== SHARING ====================
+// ═══════════════════════════════════════════════════════════════
+//  SHARING
+// ═══════════════════════════════════════════════════════════════
 function shareTelegram() {
-    const text = document.getElementById('resultsText').value;
-    window.open('https://t.me/share/url?url=&text=' + encodeURIComponent(text), '_blank');
+    window.open('https://t.me/share/url?url=&text=' + encodeURIComponent(document.getElementById('resultsText').value), '_blank');
 }
-
 function shareWhatsApp() {
-    const text = document.getElementById('resultsText').value;
-    window.open('https://web.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank');
+    window.open('https://web.whatsapp.com/send?text=' + encodeURIComponent(document.getElementById('resultsText').value), '_blank');
 }
-
 function shareEmail() {
-    const text = document.getElementById('resultsText').value;
-    window.location.href = 'mailto:?subject=' + encodeURIComponent('IE Projects Voting Results') + '&body=' + encodeURIComponent(text);
+    window.location.href = 'mailto:?subject=' + encodeURIComponent('IE Projects Voting Results') + '&body=' + encodeURIComponent(document.getElementById('resultsText').value);
 }
-
 function copyResults() {
-    const textarea = document.getElementById('resultsText');
-    textarea.select();
+    const t = document.getElementById('resultsText');
+    t.select();
     document.execCommand('copy');
     showModal('Copied!', 'Results copied to clipboard.');
 }
 
-// ==================== VOTERS LIST ====================
+// ═══════════════════════════════════════════════════════════════
+//  VOTERS LIST
+// ═══════════════════════════════════════════════════════════════
 function showVotersList() {
     const container = document.getElementById('votersTable');
     if (voters.length === 0) {
@@ -1152,7 +1003,9 @@ function showVotersList() {
     document.getElementById('votersListSection').classList.remove('hidden');
 }
 
-// ==================== UTILITIES ====================
+// ═══════════════════════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════════════════════
 function updateStats() {
     let totalVotes = 0, totalProjects = 0;
     CATEGORIES.forEach(cat => {
@@ -1167,7 +1020,6 @@ function updateStats() {
 
 async function resetAll() {
     if (!confirm('⚠️ WARNING: This will delete ALL data. Are you sure?')) return;
-
     if (isCloudMode && supabaseClient) {
         try {
             await supabaseClient.from('projects').delete().neq('id', '');
@@ -1176,7 +1028,6 @@ async function resetAll() {
             await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: true } });
         } catch (e) { console.error('Reset error:', e); }
     }
-
     localStorage.removeItem('votingData');
     localStorage.removeItem('votingStatus');
     localStorage.removeItem('currentVoter');
@@ -1184,10 +1035,8 @@ async function resetAll() {
         const key = localStorage.key(i);
         if (key && key.startsWith('voted_')) localStorage.removeItem(key);
     }
-
     projects = {}; votes = {}; voters = []; currentVoter = null; isVotingActive = true;
     CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
-
     document.getElementById('adminStatus').textContent = 'Voting Active';
     document.getElementById('adminStatus').className = 'status-badge status-active';
     document.getElementById('votingClosed').classList.add('hidden');
@@ -1198,9 +1047,7 @@ async function resetAll() {
     document.getElementById('setupSection').classList.add('hidden');
     document.getElementById('registrationForm').classList.remove('hidden');
     document.getElementById('voterInfo').classList.add('hidden');
-
-    renderAll();
-    updateStats();
+    renderAll(); updateStats();
     showModal('Reset Complete', 'All data has been cleared.');
 }
 
@@ -1209,11 +1056,9 @@ function showModal(title, message) {
     document.getElementById('modalMessage').textContent = message;
     document.getElementById('messageModal').classList.add('active');
 }
-
 function closeModal() {
     document.getElementById('messageModal').classList.remove('active');
 }
-
 document.getElementById('messageModal').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
 });
