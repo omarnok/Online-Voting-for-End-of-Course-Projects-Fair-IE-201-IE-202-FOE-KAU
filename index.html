@@ -572,10 +572,16 @@ async function registerVoter() {
         return;
     }
 
-    // Check if already registered (in memory)
+    // Check if already registered (in memory or database)
     const existing = voters.find(v => v.university_id === id);
     if (existing) {
-        showModal('Already Registered', 'This university ID is already registered.');
+        // Voter already exists - allow them to "re-login" on this device
+        // This handles: after reset, new device, cleared browser data, etc.
+        currentVoter = existing;
+        localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
+        showVoterInfo();
+        renderAll();
+        showModal('Welcome Back!', 'Hello ' + existing.name + '! You are already registered. You can now vote.');
         return;
     }
 
@@ -592,7 +598,21 @@ async function registerVoter() {
         const { error } = await supabaseClient.from('voters').insert([currentVoter]);
         if (error) {
             if (error.code === '23505') {
-                showModal('Already Registered', 'This university ID is already registered in the database.');
+                // Voter exists in DB but not in local memory - fetch and use
+                const { data: dbVoter } = await supabaseClient.from('voters').select('*').eq('university_id', id).single();
+                if (dbVoter) {
+                    currentVoter = dbVoter;
+                    if (typeof currentVoter.voted_categories === 'string') {
+                        try { currentVoter.voted_categories = JSON.parse(currentVoter.voted_categories); } catch(e) { currentVoter.voted_categories = []; }
+                    }
+                    if (!currentVoter.voted_categories) currentVoter.voted_categories = [];
+                    localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
+                    showVoterInfo();
+                    renderAll();
+                    showModal('Welcome Back!', 'Hello ' + dbVoter.name + '! You are already registered. You can now vote.');
+                    return;
+                }
+                showModal('Already Registered', 'This university ID is already registered.');
             } else {
                 showModal('Error', 'Failed to register: ' + error.message);
             }
@@ -606,6 +626,7 @@ async function registerVoter() {
     localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
     showVoterInfo();
     updateStats();
+    renderAll();
     showModal('Welcome!', 'Hello ' + name + '! You are now registered and can vote.');
 }
 
