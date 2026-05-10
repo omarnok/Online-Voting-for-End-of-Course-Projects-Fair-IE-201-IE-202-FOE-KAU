@@ -26,6 +26,7 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 .btn-warning{background:#f39c12;color:white}
 .btn-info{background:#3498db;color:white}
 .btn-sm{padding:6px 12px;font-size:13px}
+.btn-xs{padding:4px 8px;font-size:11px}
 .status-badge{padding:8px 16px;border-radius:20px;font-weight:bold;font-size:14px}
 .status-active{background:#d4edda;color:#155724}
 .status-stopped{background:#f8d7da;color:#721c24}
@@ -118,11 +119,12 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 .connecting-box{background:#e3f2fd;border:2px solid #2196f3;border-radius:10px;padding:20px;text-align:center;margin-bottom:20px}
 .csv-import-box{background:#f0f9ff;border:2px dashed #3498db;border-radius:10px;padding:20px;margin-bottom:20px;text-align:center}
 .csv-import-box h3{color:#3498db;margin-bottom:10px}
-.voter-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #e0e0e0}
+.voter-row{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #e0e0e0;flex-wrap:wrap;gap:10px}
 .voter-row:hover{background:#f8f9fa}
-.voter-actions{display:flex;gap:8px}
+.voter-actions{display:flex;gap:8px;flex-wrap:wrap}
 .code-block{background:#2d2d2d;color:#f8f8f2;padding:15px;border-radius:8px;font-family:'Courier New',monospace;font-size:13px;overflow-x:auto;margin:10px 0;line-height:1.5}
-@media(max-width:768px){.projects-grid{grid-template-columns:1fr}.setup-grid{grid-template-columns:1fr}header h1{font-size:1.8em}.winner-card .project-title{font-size:1.6em}.winner-card .member-row{flex-direction:column;align-items:flex-start;gap:5px}.result-item{flex-direction:column;align-items:flex-start;gap:10px}.result-votes{text-align:left;width:100%}.voter-row{flex-direction:column;align-items:flex-start;gap:8px}}
+.alert-box{background:#fff3cd;border:1px solid #f39c12;border-radius:8px;padding:15px;margin:15px 0;color:#856404}
+@media(max-width:768px){.projects-grid{grid-template-columns:1fr}.setup-grid{grid-template-columns:1fr}header h1{font-size:1.8em}.winner-card .project-title{font-size:1.6em}.winner-card .member-row{flex-direction:column;align-items:flex-start;gap:5px}.result-item{flex-direction:column;align-items:flex-start;gap:10px}.result-votes{text-align:left;width:100%}.voter-row{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
@@ -146,10 +148,10 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 <div class="card hidden" id="connectionFailedCard">
 <h2>⚠️ Connection Failed</h2>
 <p style="color:#666;margin-bottom:15px">Could not connect to the cloud database.</p>
-<div style="background:#fff3cd;border:1px solid #f39c12;border-radius:8px;padding:15px;margin-bottom:15px;color:#856404">
+<div class="alert-box">
 <strong>Possible reasons:</strong>
 <ul style="margin-top:8px;margin-left:20px">
-<li>Database tables not created yet</li>
+<li>Database tables not created yet (run SQL setup)</li>
 <li>Supabase project paused</li>
 <li>Internet connection issue</li>
 </ul>
@@ -172,7 +174,7 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 <div id="registrationForm">
 <div class="form-group"><label>Full Name *</label><input type="text" id="voterName" placeholder="Enter your full name"></div>
 <div class="form-group"><label>University ID *</label><input type="text" id="voterId" placeholder="Enter your university ID"></div>
-<div class="form-group"><label>Email *</label><input type="email" id="voterEmail" placeholder="Enter your email"></div>
+<div class="form-group"><label>Email *</label><input type="email" id="voterEmail" placeholder="Enter your email (required)"></div>
 <div class="form-group"><label>Phone Number</label><input type="tel" id="voterPhone" placeholder="Enter your phone (optional)"></div>
 <button class="btn btn-primary" onclick="registerVoter()">Register to Vote</button>
 </div>
@@ -213,19 +215,22 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 <div style="background:#f8f9fa;padding:15px;border-radius:8px;margin-bottom:15px">
 <h4 style="margin-bottom:10px">📋 CSV Format (required columns):</h4>
 <div class="code-block">category,name,instructor,section,team,members
-IE201-M,Smart Factory,Dr. Ahmed,A1,5,"[{name:'Ali',id:'201845'},{name:'Sara',id:'201923'}]"
-IE201-M,Auto Scheduler,Dr. Sara,B2,3,"[{name:'Khalid',id:'201856'}]"
-IE201-F,IoT Monitor,Dr. Fatima,A1,7,"[{name:'Noor',id:'201901'},{name:'Huda',id:'201912'}]"</div>
+IE201-M,Smart Factory,Dr. Ahmed,A1,5,"Ali:201845|Sara:201923|Khalid:201856"
+IE201-M,Auto Scheduler,Dr. Sara,B2,3,"Fatima:201901|Omar:201912"
+IE201-F,IoT Monitor,Dr. Fatima,A1,7,"Noor:201934|Huda:201945"
+IE202-M,Quality Control AI,Dr. Khalid,C1,2,"Yusuf:202011|Aisha:202022"
+IE202-F,Supply Chain Optimizer,Dr. Layla,A2,9,"Rania:202033"</div>
 <p style="color:#666;font-size:14px;margin-top:10px">
 <strong>category:</strong> IE201-M, IE201-F, IE202-M, or IE202-F<br>
-<strong>members:</strong> JSON array with name and id for each member<br>
-<strong>image:</strong> Optional - paste base64 or URL (leave empty for no image)
+<strong>members:</strong> Format: "Name:ID|Name:ID|Name:ID" (pipe-separated)<br>
+<strong>image:</strong> Optional - leave empty or paste base64/URL
 </p>
-<a href="#" onclick="downloadSampleCSV();return false" style="color:#3498db">📥 Download Sample CSV</a>
+<button class="btn btn-info" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
+<button class="btn btn-success" onclick="downloadCSVTemplate()">📥 Download Empty Template</button>
 </div>
 <div id="csvPreview"></div>
 <button class="btn btn-success" style="width:100%" onclick="confirmCSVImport()">💾 Import All Projects</button>
-<button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="document.getElementById('importSection').classList.add('hidden')">← Back to Setup</button>
+<button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="document.getElementById('importSection').classList.add('hidden')">← Back</button>
 </div>
 
 <!-- Setup Section -->
@@ -238,7 +243,7 @@ IE201-F,IoT Monitor,Dr. Fatima,A1,7,"[{name:'Noor',id:'201901'},{name:'Huda',id:
 
 <!-- Voters List -->
 <div class="card hidden" id="votersListSection">
-<h2>👥 Registered Voters</h2>
+<h2>👥 Registered Voters <span id="voterCountBadge" style="background:#667eea;color:white;padding:4px 12px;border-radius:20px;font-size:14px;margin-left:10px">0</span></h2>
 <div id="votersTable"></div>
 </div>
 
@@ -329,6 +334,7 @@ let votes = {};
 let voters = [];
 let currentVoter = null;
 let csvData = [];
+let voteRecords = [];
 
 CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
 
@@ -341,7 +347,7 @@ window.addEventListener('DOMContentLoaded', function() {
             '<div class="connecting-box" style="background:#f8d7da;border-color:#e74c3c">' +
             '<h3 style="color:#721c24">⚠️ Setup Required</h3>' +
             '<p style="color:#721c24">Admin needs to enter Supabase credentials in the code before sharing this link.</p>' +
-            '<p style="color:#721c24;margin-top:10px;font-size:14px">Open this file in a text editor and replace SUPABASE_URL and SUPABASE_KEY.</p>' +
+            '<p style="color:#721c24;margin-top:10px;font-size:14px">Open this file in a text editor and replace SUPABASE_URL and SUPABASE_KEY at the top.</p>' +
             '<button class="btn btn-success" style="margin-top:15px" onclick="useLocalMode()">Use Offline Mode</button>' +
             '</div>';
         return;
@@ -451,7 +457,7 @@ function setupRealtime() {
 //  CLOUD DATA LOADING
 // ═══════════════════════════════════════════════════════════════
 async function loadCloudData() {
-    await Promise.all([loadCloudProjects(), loadCloudVotes(), loadCloudVoters(), loadCloudSettings()]);
+    await Promise.all([loadCloudProjects(), loadCloudVotes(), loadCloudVoters(), loadCloudSettings(), loadCloudVoteRecords()]);
     renderAll();
     updateStats();
 }
@@ -501,6 +507,13 @@ async function loadCloudVoters() {
     updateStats();
 }
 
+async function loadCloudVoteRecords() {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient.from('vote_records').select('*');
+    if (error) { console.log('Vote records not available (optional):', error.message); return; }
+    voteRecords = data || [];
+}
+
 async function loadCloudSettings() {
     if (!supabaseClient) return;
     const { data, error } = await supabaseClient.from('settings').select('*').eq('key', 'voting').single();
@@ -540,7 +553,7 @@ function saveLocalData() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  VOTER REGISTRATION (Email now mandatory)
+//  VOTER REGISTRATION (Email mandatory)
 // ═══════════════════════════════════════════════════════════════
 async function registerVoter() {
     const name = document.getElementById('voterName').value.trim();
@@ -553,13 +566,13 @@ async function registerVoter() {
         return;
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         showModal('Invalid Email', 'Please enter a valid email address (e.g., name@university.edu).');
         return;
     }
 
+    // Check if already registered (in memory)
     const existing = voters.find(v => v.university_id === id);
     if (existing) {
         showModal('Already Registered', 'This university ID is already registered.');
@@ -578,7 +591,11 @@ async function registerVoter() {
     if (isCloudMode && supabaseClient) {
         const { error } = await supabaseClient.from('voters').insert([currentVoter]);
         if (error) {
-            showModal('Error', 'Failed to register: ' + error.message);
+            if (error.code === '23505') {
+                showModal('Already Registered', 'This university ID is already registered in the database.');
+            } else {
+                showModal('Error', 'Failed to register: ' + error.message);
+            }
             return;
         }
     } else {
@@ -684,19 +701,23 @@ async function vote(category, projectId) {
         return;
     }
 
-    // Server-side duplicate check (prevents voting from multiple devices)
+    // Server-side duplicate check
     if (isCloudMode && supabaseClient) {
-        const { data: existingVote } = await supabaseClient
-            .from('vote_records')
-            .select('*')
-            .eq('voter_id', currentVoter.university_id)
-            .eq('category', category)
-            .single();
+        try {
+            const { data: existingVote } = await supabaseClient
+                .from('vote_records')
+                .select('*')
+                .eq('voter_id', currentVoter.university_id)
+                .eq('category', category)
+                .single();
 
-        if (existingVote) {
-            localStorage.setItem(voteKey, existingVote.project_id);
-            showModal('Already Voted', 'You have already voted in this category! (tracked on server)');
-            return;
+            if (existingVote) {
+                localStorage.setItem(voteKey, existingVote.project_id);
+                showModal('Already Voted', 'You have already voted in this category! (tracked on server)');
+                return;
+            }
+        } catch (e) {
+            // vote_records table might not exist, continue with local check
         }
     }
 
@@ -705,21 +726,20 @@ async function vote(category, projectId) {
     if (isCloudMode && supabaseClient) {
         const voteId = category + '_' + projectId;
 
-        // Record the vote with voter ID (prevents duplicates)
-        const { error: recordError } = await supabaseClient.from('vote_records').insert([{
-            voter_id: currentVoter.university_id,
-            category: category,
-            project_id: projectId,
-            voted_at: new Date().toISOString()
-        }]);
-
-        if (recordError) {
-            // If duplicate key error, someone already voted
-            if (recordError.code === '23505') {
+        // Record the vote (prevents duplicates)
+        try {
+            await supabaseClient.from('vote_records').insert([{
+                voter_id: currentVoter.university_id,
+                category: category,
+                project_id: projectId,
+                voted_at: new Date().toISOString()
+            }]);
+        } catch (e) {
+            if (e.code === '23505') {
                 showModal('Already Voted', 'This university ID has already voted in this category.');
                 return;
             }
-            console.error('Vote record error:', recordError);
+            // vote_records table might not exist, continue
         }
 
         // Increment vote count
@@ -798,6 +818,196 @@ function switchTab(category) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  VOTER MANAGEMENT - With Vote Exclusion (FIXED)
+// ═══════════════════════════════════════════════════════════════
+async function showVotersList() {
+    const container = document.getElementById('votersTable');
+    document.getElementById('voterCountBadge').textContent = voters.length;
+
+    if (voters.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:#666;padding:20px">No voters registered yet.</p>';
+        document.getElementById('votersListSection').classList.remove('hidden');
+        return;
+    }
+
+    let html = '<div style="max-height:600px;overflow-y:auto">';
+
+    voters.forEach((v, idx) => {
+        const votedCount = v.voted_categories ? v.voted_categories.length : 0;
+        const voterVotes = voteRecords.filter(r => r.voter_id === v.university_id);
+
+        html += '<div class="voter-row">' +
+            '<div style="flex:1;min-width:200px">' +
+                '<strong>' + (v.name || '') + '</strong><br>' +
+                '<small style="color:#666">ID: ' + (v.university_id || '') + ' | Email: ' + (v.email || '-') + '</small><br>' +
+                '<small style="color:#667eea;font-weight:600">Voted: ' + votedCount + '/4 categories</small>';
+
+        // Show voted categories as badges
+        if (v.voted_categories && v.voted_categories.length > 0) {
+            html += '<div style="margin-top:6px">';
+            v.voted_categories.forEach(cat => {
+                html += '<span style="background:#e3f2fd;padding:3px 10px;border-radius:10px;margin-right:5px;font-size:12px">' + 
+                    (CATEGORY_NAMES[cat] || cat) + '</span>';
+            });
+            html += '</div>';
+        }
+
+        html += '</div>';
+
+        // Admin controls - ALWAYS show if admin is logged in and voter has voted
+        if (isAdmin && votedCount > 0) {
+            html += '<div class="voter-actions" style="margin-top:8px">';
+
+            // Show remove buttons for each voted category
+            if (v.voted_categories && v.voted_categories.length > 0) {
+                v.voted_categories.forEach(cat => {
+                    html += '<button class="btn btn-danger btn-sm" onclick="excludeVote(\'' + v.university_id + '\',\'' + cat + '\')">' +
+                        'Remove ' + (CATEGORY_NAMES[cat] || cat) + ' Vote' +
+                    '</button>';
+                });
+            }
+
+            html += '</div>';
+        }
+
+        html += '</div>';
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+    document.getElementById('votersListSection').classList.remove('hidden');
+}
+
+async function excludeVote(voterId, category) {
+    if (!confirm('Are you sure you want to remove this voter\'s vote for ' + (CATEGORY_NAMES[category] || category) + '?')) return;
+
+    // Find the project they voted for
+    let projectId = null;
+    const voterRecord = voteRecords.find(r => r.voter_id === voterId && r.category === category);
+    if (voterRecord) projectId = voterRecord.project_id;
+
+    // Fallback: find from localStorage
+    if (!projectId) {
+        projectId = localStorage.getItem('voted_' + voterId + '_' + category);
+    }
+
+    if (isCloudMode && supabaseClient) {
+        try {
+            // 1. Delete vote record if table exists
+            try {
+                await supabaseClient.from('vote_records')
+                    .delete()
+                    .eq('voter_id', voterId)
+                    .eq('category', category);
+            } catch (e) { /* vote_records might not exist */ }
+
+            // 2. Decrement vote count
+            if (projectId) {
+                const voteId = category + '_' + projectId;
+                const { data: existing } = await supabaseClient.from('votes').select('count').eq('id', voteId).single();
+                const newCount = Math.max(0, (existing ? existing.count : 0) - 1);
+                await supabaseClient.from('votes').upsert({
+                    id: voteId, category: category, project_id: projectId,
+                    count: newCount, last_updated: new Date().toISOString()
+                });
+            }
+
+            // 3. Update voter's voted_categories
+            const { data: voter } = await supabaseClient.from('voters').select('voted_categories').eq('university_id', voterId).single();
+            if (voter && voter.voted_categories) {
+                let cats = typeof voter.voted_categories === 'string' ? JSON.parse(voter.voted_categories) : voter.voted_categories;
+                cats = (cats || []).filter(c => c !== category);
+                await supabaseClient.from('voters').update({ voted_categories: cats }).eq('university_id', voterId);
+            }
+
+        } catch (e) {
+            console.error('Exclude error:', e);
+            showModal('Error', 'Failed to remove vote: ' + e.message);
+            return;
+        }
+    }
+
+    // Always clear localStorage
+    localStorage.removeItem('voted_' + voterId + '_' + category);
+
+    // Update local voter object
+    const voter = voters.find(v => v.university_id === voterId);
+    if (voter && voter.voted_categories) {
+        voter.voted_categories = voter.voted_categories.filter(c => c !== category);
+    }
+
+    // Update vote records in memory
+    voteRecords = voteRecords.filter(r => !(r.voter_id === voterId && r.category === category));
+
+    // Decrement local vote count
+    if (!isCloudMode && projectId && votes[category]) {
+        votes[category][projectId] = Math.max(0, (votes[category][projectId] || 0) - 1);
+        saveLocalData();
+    }
+
+    showModal('Success!', 'Vote removed successfully.');
+    renderAll();
+    updateStats();
+    showVotersList();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RESET ALL - Properly clears Supabase and reloads
+// ═══════════════════════════════════════════════════════════════
+async function resetAll() {
+    if (!confirm('⚠️ WARNING: This will delete ALL data permanently.\n\nThis includes:\n- All projects\n- All votes\n- All voters\n- All vote records\n\nAre you sure?')) return;
+
+    showModal('Resetting...', 'Please wait while we clear all data...');
+
+    if (isCloudMode && supabaseClient) {
+        try {
+            // Delete in order (child tables first)
+            await supabaseClient.from('vote_records').delete().neq('id', 0);
+            await supabaseClient.from('votes').delete().neq('id', '');
+            await supabaseClient.from('projects').delete().neq('id', '');
+            await supabaseClient.from('voters').delete().neq('university_id', '');
+            await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: true } });
+        } catch (e) {
+            console.error('Reset error:', e);
+        }
+    }
+
+    // Clear localStorage
+    localStorage.removeItem('votingData');
+    localStorage.removeItem('votingStatus');
+    localStorage.removeItem('currentVoter');
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('voted_')) localStorage.removeItem(key);
+    }
+
+    // Reset state
+    projects = {}; votes = {}; voters = []; currentVoter = null; voteRecords = []; isVotingActive = true;
+    CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
+
+    // Reset UI
+    document.getElementById('adminStatus').textContent = 'Voting Active';
+    document.getElementById('adminStatus').className = 'status-badge status-active';
+    document.getElementById('votingClosed').classList.add('hidden');
+    document.getElementById('categoryTabs').classList.remove('hidden');
+    document.getElementById('votingSections').classList.remove('hidden');
+    document.getElementById('resultsSection').classList.remove('active');
+    document.getElementById('votersListSection').classList.add('hidden');
+    document.getElementById('setupSection').classList.add('hidden');
+    document.getElementById('importSection').classList.add('hidden');
+    document.getElementById('registrationForm').classList.remove('hidden');
+    document.getElementById('voterInfo').classList.add('hidden');
+
+    // Reload from cloud to sync empty state
+    if (isCloudMode && supabaseClient) {
+        await loadCloudData();
+    }
+
+    renderAll(); updateStats();
+    showModal('Reset Complete', 'All data has been cleared. The system is ready for new voters.');
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  CSV BULK IMPORT
 // ═══════════════════════════════════════════════════════════════
 function showImport() {
@@ -807,17 +1017,37 @@ function showImport() {
 
 function downloadSampleCSV() {
     const csvContent = 'category,name,instructor,section,team,members\n' +
-        'IE201-M,Smart Factory System,Dr. Ahmed Khalid,A1,5,"[{name:\'Mohammed Ali\',id:\'201845\'},{name:\'Sara Ahmed\',id:\'201923\'},{name:\'Khalid Omar\',id:\'201856\'}]"\n' +
-        'IE201-M,Auto Scheduler,Dr. Sara Omar,B2,3,"[{name:\'Fatima Hassan\',id:\'201901\'},{name:\'Omar Khaled\',id:\'201912\'}]"\n' +
-        'IE201-F,IoT Monitor,Dr. Fatima Ali,A1,7,"[{name:\'Noor Salem\',id:\'201934\'},{name:\'Huda Kareem\',id:\'201945\'}]"\n' +
-        'IE202-M,Quality Control AI,Dr. Khalid Hassan,C1,2,"[{name:\'Yusuf Mahmoud\',id:\'202011\'},{name:\'Aisha Farid\',id:\'202022\'}]"\n' +
-        'IE202-F,Supply Chain Optimizer,Dr. Layla Mahmoud,A2,9,"[{name:\'Rania Tarek\',id:\'202033\'}]"';
+        'IE201-M,Smart Factory System,Dr. Ahmed Khalid,A1,5,"Ali:201845|Sara:201923|Khalid:201856"\n' +
+        'IE201-M,Auto Scheduler,Dr. Sara Omar,B2,3,"Fatima:201901|Omar:201912"\n' +
+        'IE201-F,IoT Monitor,Dr. Fatima Ali,A1,7,"Noor:201934|Huda:201945"\n' +
+        'IE202-M,Quality Control AI,Dr. Khalid Hassan,C1,2,"Yusuf:202011|Aisha:202022"\n' +
+        'IE202-F,Supply Chain Optimizer,Dr. Layla Mahmoud,A2,9,"Rania:202033"';
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = 'sample-projects.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function downloadCSVTemplate() {
+    const csvContent = 'category,name,instructor,section,team,members\n' +
+        'IE201-M,,,,,""\n' +
+        'IE201-M,,,,,""\n' +
+        'IE201-F,,,,,""\n' +
+        'IE201-F,,,,,""\n' +
+        'IE202-M,,,,,""\n' +
+        'IE202-M,,,,,""\n' +
+        'IE202-F,,,,,""\n' +
+        'IE202-F,,,,,""';
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'project-template.csv';
     a.click();
     URL.revokeObjectURL(url);
 }
@@ -842,10 +1072,8 @@ function parseCSV(text) {
         return;
     }
 
-    // Parse header
     const headers = parseCSVLine(lines[0]);
 
-    // Parse data rows
     for (let i = 1; i < lines.length; i++) {
         const values = parseCSVLine(lines[i]);
         if (values.length < 5) continue;
@@ -853,26 +1081,27 @@ function parseCSV(text) {
         const row = {};
         headers.forEach((h, idx) => { row[h.trim()] = values[idx] ? values[idx].trim() : ''; });
 
-        // Parse members JSON
+        if (!row.name || !row.category) continue;
+
+        // Parse members: "Name:ID|Name:ID|Name:ID"
         let members = [{name: 'Unknown', id: 'N/A'}];
-        if (row.members) {
-            try {
-                const parsed = JSON.parse(row.members.replace(/'/g, '"'));
-                if (Array.isArray(parsed) && parsed.length > 0) members = parsed;
-            } catch(e) {
-                // Try alternative parsing
-                try {
-                    const parsed = eval('(' + row.members + ')');
-                    if (Array.isArray(parsed) && parsed.length > 0) members = parsed;
-                } catch(e2) {}
-            }
+        if (row.members && row.members.trim()) {
+            const memberPairs = row.members.split('|');
+            const parsedMembers = [];
+            memberPairs.forEach(pair => {
+                const parts = pair.split(':');
+                if (parts.length >= 2) {
+                    parsedMembers.push({ name: parts[0].trim(), id: parts[1].trim() });
+                }
+            });
+            if (parsedMembers.length > 0) members = parsedMembers;
         }
 
         csvData.push({
-            id: (row.category || 'UNKNOWN') + '-SEC' + (row.section || '1') + '-TEAM' + (row.team || '1'),
-            name: row.name || '',
+            id: row.category + '-SEC' + (row.section || '1') + '-TEAM' + (row.team || '1'),
+            name: row.name,
             instructor: row.instructor || 'Not specified',
-            category: row.category || '',
+            category: row.category,
             section: row.section || '1',
             team: row.team || '1',
             image: row.image || null,
@@ -927,12 +1156,10 @@ async function confirmCSVImport() {
 
     if (isCloudMode && supabaseClient) {
         try {
-            // Clear existing data
             await supabaseClient.from('projects').delete().neq('id', '');
             await supabaseClient.from('votes').delete().neq('id', '');
-            await supabaseClient.from('vote_records').delete().neq('id', '');
+            try { await supabaseClient.from('vote_records').delete().neq('id', 0); } catch(e) {}
 
-            // Insert new projects
             for (const project of csvData) {
                 if (!CATEGORIES.includes(project.category)) continue;
 
@@ -956,9 +1183,9 @@ async function confirmCSVImport() {
 
         } catch (e) {
             showModal('Error', 'Import failed: ' + e.message);
+            return;
         }
     } else {
-        // Local mode
         CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
         csvData.forEach(project => {
             if (!CATEGORIES.includes(project.category)) return;
@@ -1087,7 +1314,7 @@ async function saveSetup() {
         try {
             await supabaseClient.from('projects').delete().neq('id', '');
             await supabaseClient.from('votes').delete().neq('id', '');
-            await supabaseClient.from('vote_records').delete().neq('id', '');
+            try { await supabaseClient.from('vote_records').delete().neq('id', 0); } catch(e) {}
             for (const project of projectsToSave) {
                 await supabaseClient.from('projects').insert([{
                     id: project.id, name: project.name, instructor: project.instructor,
@@ -1109,165 +1336,6 @@ async function saveSetup() {
         showModal('Success!', 'Projects saved locally.');
     }
     document.getElementById('setupSection').classList.add('hidden');
-    renderAll(); updateStats();
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  VOTER MANAGEMENT - With Vote Exclusion
-// ═══════════════════════════════════════════════════════════════
-async function showVotersList() {
-    const container = document.getElementById('votersTable');
-
-    // Load vote records to show what each voter voted for
-    let voteRecords = [];
-    if (isCloudMode && supabaseClient) {
-        const { data } = await supabaseClient.from('vote_records').select('*');
-        voteRecords = data || [];
-    }
-
-    if (voters.length === 0) {
-        container.innerHTML = '<p style="text-align:center;color:#666">No voters registered yet.</p>';
-    } else {
-        let html = '<div style="max-height:500px;overflow-y:auto">';
-
-        voters.forEach((v, idx) => {
-            const votedCount = v.voted_categories ? v.voted_categories.length : 0;
-            const voterVotes = voteRecords.filter(r => r.voter_id === v.university_id);
-
-            html += '<div class="voter-row">' +
-                '<div style="flex:1">' +
-                    '<strong>' + (v.name || '') + '</strong> (' + (v.university_id || '') + ')<br>' +
-                    '<small style="color:#666">' + (v.email || '') + ' | Voted: ' + votedCount + '/4 categories</small>';
-
-            // Show what they voted for
-            if (voterVotes.length > 0) {
-                html += '<div style="margin-top:5px;font-size:13px">';
-                voterVotes.forEach(vote => {
-                    html += '<span style="background:#e3f2fd;padding:2px 8px;border-radius:10px;margin-right:5px">' + 
-                        CATEGORY_NAMES[vote.category] + '</span>';
-                });
-                html += '</div>';
-            }
-
-            html += '</div>' +
-                '<div class="voter-actions">';
-
-            // Show exclude buttons for each vote
-            if (isAdmin && voterVotes.length > 0) {
-                voterVotes.forEach(vote => {
-                    html += '<button class="btn btn-danger btn-sm" onclick="excludeVote(\'' + vote.voter_id + '\',\'' + vote.category + '\',\'' + vote.project_id + '\')">Remove ' + CATEGORY_NAMES[vote.category] + ' Vote</button>';
-                });
-            }
-
-            html += '</div></div>';
-        });
-
-        html += '</div>';
-        container.innerHTML = html;
-    }
-    document.getElementById('votersListSection').classList.remove('hidden');
-}
-
-async function excludeVote(voterId, category, projectId) {
-    if (!confirm('Are you sure you want to remove this voter\'s vote for ' + CATEGORY_NAMES[category] + '?')) return;
-
-    if (isCloudMode && supabaseClient) {
-        try {
-            // 1. Delete vote record
-            await supabaseClient.from('vote_records')
-                .delete()
-                .eq('voter_id', voterId)
-                .eq('category', category);
-
-            // 2. Decrement vote count
-            const voteId = category + '_' + projectId;
-            const { data: existing } = await supabaseClient.from('votes').select('count').eq('id', voteId).single();
-            const newCount = Math.max(0, (existing ? existing.count : 0) - 1);
-            await supabaseClient.from('votes').upsert({
-                id: voteId, category: category, project_id: projectId,
-                count: newCount, last_updated: new Date().toISOString()
-            });
-
-            // 3. Update voter's voted_categories
-            const { data: voter } = await supabaseClient.from('voters').select('voted_categories').eq('university_id', voterId).single();
-            if (voter && voter.voted_categories) {
-                let cats = typeof voter.voted_categories === 'string' ? JSON.parse(voter.voted_categories) : voter.voted_categories;
-                cats = (cats || []).filter(c => c !== category);
-                await supabaseClient.from('voters').update({ voted_categories: cats }).eq('university_id', voterId);
-            }
-
-            // 4. Clear localStorage for this voter (if it's the current device)
-            localStorage.removeItem('voted_' + voterId + '_' + category);
-
-            showModal('Success!', 'Vote removed successfully.');
-
-        } catch (e) {
-            showModal('Error', 'Failed to remove vote: ' + e.message);
-            return;
-        }
-    } else {
-        // Local mode
-        if (!votes[category]) votes[category] = {};
-        votes[category][projectId] = Math.max(0, (votes[category][projectId] || 0) - 1);
-        localStorage.removeItem('voted_' + voterId + '_' + category);
-        saveLocalData();
-        showModal('Success!', 'Vote removed locally.');
-    }
-
-    // Refresh displays
-    renderAll();
-    updateStats();
-    showVotersList();
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  RESET ALL - Properly clears Supabase
-// ═══════════════════════════════════════════════════════════════
-async function resetAll() {
-    if (!confirm('⚠️ WARNING: This will delete ALL data permanently (projects, votes, voters, vote records). Are you sure?')) return;
-
-    if (isCloudMode && supabaseClient) {
-        try {
-            // Delete ALL data from ALL tables
-            await supabaseClient.from('vote_records').delete().neq('id', '');
-            await supabaseClient.from('votes').delete().neq('id', '');
-            await supabaseClient.from('projects').delete().neq('id', '');
-            await supabaseClient.from('voters').delete().neq('university_id', '');
-            await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: true } });
-
-            showModal('Reset Complete', 'All cloud data has been cleared.');
-        } catch (e) {
-            console.error('Reset error:', e);
-            showModal('Error', 'Some data may not have been cleared: ' + e.message);
-        }
-    }
-
-    // Always clear localStorage
-    localStorage.removeItem('votingData');
-    localStorage.removeItem('votingStatus');
-    localStorage.removeItem('currentVoter');
-    for (let i = localStorage.length - 1; i >= 0; i--) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('voted_')) localStorage.removeItem(key);
-    }
-
-    // Reset state
-    projects = {}; votes = {}; voters = []; currentVoter = null; isVotingActive = true;
-    CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
-
-    // Reset UI
-    document.getElementById('adminStatus').textContent = 'Voting Active';
-    document.getElementById('adminStatus').className = 'status-badge status-active';
-    document.getElementById('votingClosed').classList.add('hidden');
-    document.getElementById('categoryTabs').classList.remove('hidden');
-    document.getElementById('votingSections').classList.remove('hidden');
-    document.getElementById('resultsSection').classList.remove('active');
-    document.getElementById('votersListSection').classList.add('hidden');
-    document.getElementById('setupSection').classList.add('hidden');
-    document.getElementById('importSection').classList.add('hidden');
-    document.getElementById('registrationForm').classList.remove('hidden');
-    document.getElementById('voterInfo').classList.add('hidden');
-
     renderAll(); updateStats();
 }
 
