@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IE201/202 Projects Voting System</title>
+<title>Voting System for IE 201/IE 202 Projects - Engineering Day Exhibition</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
 body{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}
 .container{max-width:1400px;margin:0 auto}
 header{text-align:center;color:white;padding:30px 0}
-header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,0.3)}
+header h1{font-size:2.2em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,0.3);line-height:1.3}
+header p{font-size:1.1em;opacity:0.9}
 .card{background:white;border-radius:15px;padding:30px;margin-bottom:25px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
 .card h2{color:#333;margin-bottom:20px;display:flex;align-items:center;gap:10px}
 .form-group{margin-bottom:20px}
@@ -124,14 +125,18 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 .voter-actions{display:flex;gap:8px;flex-wrap:wrap}
 .code-block{background:#2d2d2d;color:#f8f8f2;padding:15px;border-radius:8px;font-family:'Courier New',monospace;font-size:13px;overflow-x:auto;margin:10px 0;line-height:1.5}
 .alert-box{background:#fff3cd;border:1px solid #f39c12;border-radius:8px;padding:15px;margin:15px 0;color:#856404}
-@media(max-width:768px){.projects-grid{grid-template-columns:1fr}.setup-grid{grid-template-columns:1fr}header h1{font-size:1.8em}.winner-card .project-title{font-size:1.6em}.winner-card .member-row{flex-direction:column;align-items:flex-start;gap:5px}.result-item{flex-direction:column;align-items:flex-start;gap:10px}.result-votes{text-align:left;width:100%}.voter-row{flex-direction:column;align-items:flex-start}}
+.access-code-box{background:#e8f5e9;border:2px solid #4caf50;border-radius:10px;padding:15px;margin-bottom:15px}
+.access-code-box label{color:#2e7d32;font-weight:600}
+.course-winner-section{background:linear-gradient(135deg,#f5f7fa 0%,#e4e8ec 100%);padding:30px;border-radius:15px;margin-bottom:30px;border:2px solid #667eea}
+.course-winner-section h3{color:#667eea;text-align:center;margin-bottom:20px;font-size:1.5em}
+@media(max-width:768px){.projects-grid{grid-template-columns:1fr}.setup-grid{grid-template-columns:1fr}header h1{font-size:1.5em}header p{font-size:0.9em}.winner-card .project-title{font-size:1.6em}.winner-card .member-row{flex-direction:column;align-items:flex-start;gap:5px}.result-item{flex-direction:column;align-items:flex-start;gap:10px}.result-votes{text-align:left;width:100%}.voter-row{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
 <div class="container">
 <header>
-<h1>🏆 IE201/202 Projects Voting System</h1>
-<p>Cloud-Powered Real-Time Voting</p>
+<h1>🏆 Voting System for IE 201/IE 202 Projects</h1>
+<p>Engineering Day Exhibition - Faculty of Engineering, King Abdulaziz University</p>
 </header>
 
 <!-- Connecting Screen -->
@@ -172,9 +177,16 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 <div class="card hidden" id="voterRegistration">
 <h2>📝 Voter Registration</h2>
 <div id="registrationForm">
+<div class="access-code-box">
+<div class="form-group" style="margin-bottom:0">
+<label>🔐 Access Code *</label>
+<input type="text" id="accessCode" placeholder="Enter the access code provided by admin">
+<p style="font-size:13px;color:#666;margin-top:5px">You need an access code to register. Contact the admin if you don't have one.</p>
+</div>
+</div>
 <div class="form-group"><label>Full Name *</label><input type="text" id="voterName" placeholder="Enter your full name"></div>
 <div class="form-group"><label>University ID *</label><input type="text" id="voterId" placeholder="Enter your university ID"></div>
-<div class="form-group"><label>Email *</label><input type="email" id="voterEmail" placeholder="Enter your email (required)"></div>
+<div class="form-group"><label>Email *</label><input type="email" id="voterEmail" placeholder="Enter your email"></div>
 <div class="form-group"><label>Phone Number</label><input type="tel" id="voterPhone" placeholder="Enter your phone (optional)"></div>
 <button class="btn btn-primary" onclick="registerVoter()">Register to Vote</button>
 </div>
@@ -201,6 +213,20 @@ header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,
 </div>
 </div>
 
+<!-- Admin Access Code Setting -->
+<div class="card hidden" id="accessCodeSection">
+<h2>🔐 Set Access Code</h2>
+<div class="access-code-box">
+<div class="form-group" style="margin-bottom:0">
+<label>Current Access Code</label>
+<input type="text" id="newAccessCode" placeholder="Enter new access code for all voters" style="font-size:18px;font-weight:bold">
+<p style="font-size:13px;color:#666;margin-top:5px">All voters must enter this code to register. Share this code with eligible voters only.</p>
+</div>
+</div>
+<button class="btn btn-success" onclick="saveAccessCode()">💾 Save Access Code</button>
+<button class="btn btn-primary" onclick="document.getElementById('accessCodeSection').classList.add('hidden')">← Back</button>
+</div>
+
 <!-- CSV Import Section -->
 <div class="card hidden" id="importSection">
 <h2>📥 Bulk Import Projects</h2>
@@ -222,8 +248,7 @@ IE202-M,Quality Control AI,Dr. Khalid,C1,2,"Yusuf:202011|Aisha:202022"
 IE202-F,Supply Chain Optimizer,Dr. Layla,A2,9,"Rania:202033"</div>
 <p style="color:#666;font-size:14px;margin-top:10px">
 <strong>category:</strong> IE201-M, IE201-F, IE202-M, or IE202-F<br>
-<strong>members:</strong> Format: "Name:ID|Name:ID|Name:ID" (pipe-separated)<br>
-<strong>image:</strong> Optional - leave empty or paste base64/URL
+<strong>members:</strong> Format: "Name:ID|Name:ID|Name:ID" (pipe-separated)
 </p>
 <button class="btn btn-info" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
 <button class="btn btn-success" onclick="downloadCSVTemplate()">📥 Download Empty Template</button>
@@ -273,7 +298,8 @@ IE202-F,Supply Chain Optimizer,Dr. Layla,A2,9,"Rania:202033"</div>
 <!-- Results Section -->
 <div class="results-section" id="resultsSection">
 <h2 style="text-align:center;margin-bottom:10px;color:#333;font-size:2em">🏆 Final Results</h2>
-<p style="text-align:center;color:#666;margin-bottom:30px">Ranked winners announcement</p>
+<p style="text-align:center;color:#666;margin-bottom:30px">Engineering Day Exhibition - FOE, KAU</p>
+<div id="courseWinnersContainer"></div>
 <div id="winnersContainer"></div>
 <div style="background:#f8f9fa;padding:25px;border-radius:15px;margin:30px 0">
 <h3 style="text-align:center;margin-bottom:20px;color:#333">📊 Share Results</h3>
@@ -321,6 +347,10 @@ const CATEGORY_NAMES = {
     'IE202-M': 'IE202 - Males',
     'IE202-F': 'IE202 - Females'
 };
+const COURSE_NAMES = {
+    'IE201': 'IE201 (All Sections)',
+    'IE202': 'IE202 (All Sections)'
+};
 
 // ═══════════════════════════════════════════════════════════════
 //  STATE
@@ -335,6 +365,7 @@ let voters = [];
 let currentVoter = null;
 let csvData = [];
 let voteRecords = [];
+let accessCode = 'KAU2026'; // Default access code
 
 CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
 
@@ -347,7 +378,6 @@ window.addEventListener('DOMContentLoaded', function() {
             '<div class="connecting-box" style="background:#f8d7da;border-color:#e74c3c">' +
             '<h3 style="color:#721c24">⚠️ Setup Required</h3>' +
             '<p style="color:#721c24">Admin needs to enter Supabase credentials in the code before sharing this link.</p>' +
-            '<p style="color:#721c24;margin-top:10px;font-size:14px">Open this file in a text editor and replace SUPABASE_URL and SUPABASE_KEY at the top.</p>' +
             '<button class="btn btn-success" style="margin-top:15px" onclick="useLocalMode()">Use Offline Mode</button>' +
             '</div>';
         return;
@@ -367,7 +397,7 @@ async function autoConnect() {
 
     if (typeof supabase === 'undefined' || !supabase.createClient) {
         statusEl.textContent = 'Library not loaded. Check internet.';
-        showConnectionFailed('Supabase library failed to load. Please check your internet connection and refresh.');
+        showConnectionFailed('Supabase library failed to load.');
         return;
     }
 
@@ -380,11 +410,11 @@ async function autoConnect() {
         if (error) {
             let msg = error.message;
             if (msg.includes('relation') && msg.includes('does not exist')) {
-                msg = 'Database tables not found. Please run the SQL setup script in Supabase SQL Editor first.';
+                msg = 'Database tables not found. Please run the SQL setup script first.';
             } else if (msg.includes('Invalid API key')) {
-                msg = 'Invalid API key. Please check your Supabase Anon Key.';
+                msg = 'Invalid API key.';
             } else if (msg.includes('Failed to fetch')) {
-                msg = 'Cannot reach Supabase. Check internet connection and URL.';
+                msg = 'Cannot reach Supabase. Check internet connection.';
             }
             showConnectionFailed(msg);
             return;
@@ -416,7 +446,6 @@ async function autoConnect() {
 function showConnectionFailed(msg) {
     document.getElementById('connectingCard').classList.add('hidden');
     document.getElementById('connectionFailedCard').classList.remove('hidden');
-    console.error('Connection failed:', msg);
 }
 
 function useLocalMode() {
@@ -428,7 +457,7 @@ function useLocalMode() {
     document.getElementById('adminPanel').classList.remove('hidden');
     document.getElementById('statsBar').classList.remove('hidden');
     document.getElementById('categoryTabs').classList.remove('hidden');
-    updateSyncStatus('offline', '⚠ Offline Mode - No Sync');
+    updateSyncStatus('offline', '⚠ Offline Mode');
     loadLocalData();
 }
 
@@ -457,7 +486,7 @@ function setupRealtime() {
 //  CLOUD DATA LOADING
 // ═══════════════════════════════════════════════════════════════
 async function loadCloudData() {
-    await Promise.all([loadCloudProjects(), loadCloudVotes(), loadCloudVoters(), loadCloudSettings(), loadCloudVoteRecords()]);
+    await Promise.all([loadCloudProjects(), loadCloudVotes(), loadCloudVoters(), loadCloudSettings(), loadCloudVoteRecords(), loadCloudAccessCode()]);
     renderAll();
     updateStats();
 }
@@ -510,7 +539,7 @@ async function loadCloudVoters() {
 async function loadCloudVoteRecords() {
     if (!supabaseClient) return;
     const { data, error } = await supabaseClient.from('vote_records').select('*');
-    if (error) { console.log('Vote records not available (optional):', error.message); return; }
+    if (error) { console.log('Vote records not available:', error.message); return; }
     voteRecords = data || [];
 }
 
@@ -534,6 +563,16 @@ async function loadCloudSettings() {
     }
 }
 
+async function loadCloudAccessCode() {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient.from('settings').select('*').eq('key', 'access_code').single();
+    if (error) { if (error.code !== 'PGRST116') console.error('Access code error:', error); return; }
+    if (data && data.value) {
+        const val = typeof data.value === 'string' ? data.value : (data.value.code || 'KAU2026');
+        accessCode = val;
+    }
+}
+
 // ═══════════════════════════════════════════════════════════════
 //  LOCAL STORAGE FALLBACK
 // ═══════════════════════════════════════════════════════════════
@@ -545,6 +584,8 @@ function loadLocalData() {
     if (savedVoter) { currentVoter = JSON.parse(savedVoter); showVoterInfo(); }
     const votingStatus = localStorage.getItem('votingStatus');
     if (votingStatus === 'stopped') { isVotingActive = false; document.getElementById('adminStatus').textContent = 'Voting Stopped'; document.getElementById('adminStatus').className = 'status-badge status-stopped'; }
+    const savedCode = localStorage.getItem('accessCode');
+    if (savedCode) accessCode = savedCode;
     renderAll(); updateStats();
 }
 
@@ -553,30 +594,39 @@ function saveLocalData() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  VOTER REGISTRATION (Email mandatory)
+//  VOTER REGISTRATION (with Access Code)
 // ═══════════════════════════════════════════════════════════════
 async function registerVoter() {
+    const enteredCode = document.getElementById('accessCode').value.trim();
     const name = document.getElementById('voterName').value.trim();
     const id = document.getElementById('voterId').value.trim();
     const email = document.getElementById('voterEmail').value.trim();
     const phone = document.getElementById('voterPhone').value.trim();
 
+    // Validate access code
+    if (!enteredCode) {
+        showModal('Access Code Required', 'Please enter the access code provided by the admin.');
+        return;
+    }
+    if (enteredCode !== accessCode) {
+        showModal('Invalid Access Code', 'The access code you entered is incorrect. Please contact the admin for the correct code.');
+        return;
+    }
+
     if (!name || !id || !email) {
-        showModal('Error', 'Please enter your name, university ID, and email. All three are required.');
+        showModal('Error', 'Please enter your name, university ID, and email.');
         return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        showModal('Invalid Email', 'Please enter a valid email address (e.g., name@university.edu).');
+        showModal('Invalid Email', 'Please enter a valid email address.');
         return;
     }
 
-    // Check if already registered (in memory or database)
+    // Check if already registered
     const existing = voters.find(v => v.university_id === id);
     if (existing) {
-        // Voter already exists - allow them to "re-login" on this device
-        // This handles: after reset, new device, cleared browser data, etc.
         currentVoter = existing;
         localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
         showVoterInfo();
@@ -598,7 +648,6 @@ async function registerVoter() {
         const { error } = await supabaseClient.from('voters').insert([currentVoter]);
         if (error) {
             if (error.code === '23505') {
-                // Voter exists in DB but not in local memory - fetch and use
                 const { data: dbVoter } = await supabaseClient.from('voters').select('*').eq('university_id', id).single();
                 if (dbVoter) {
                     currentVoter = dbVoter;
@@ -642,6 +691,7 @@ function logoutVoter() {
     currentVoter = null; localStorage.removeItem('currentVoter');
     document.getElementById('registrationForm').classList.remove('hidden');
     document.getElementById('voterInfo').classList.add('hidden');
+    document.getElementById('accessCode').value = '';
     document.getElementById('voterName').value = '';
     document.getElementById('voterId').value = '';
     document.getElementById('voterEmail').value = '';
@@ -665,10 +715,33 @@ function loginAdmin() {
         document.getElementById('resetBtn').classList.remove('hidden');
         document.getElementById('adminPassword').classList.add('hidden');
         event.target.classList.add('hidden');
-        showModal('Welcome Admin!', 'You have full control. Use Bulk Import to add all projects at once from a CSV file.');
+        showAccessCodeSetting();
+        showModal('Welcome Admin!', 'You have full control. Set the access code for voters and manage the system.');
     } else {
         showModal('Error', 'Incorrect password!');
     }
+}
+
+function showAccessCodeSetting() {
+    document.getElementById('newAccessCode').value = accessCode;
+    document.getElementById('accessCodeSection').classList.remove('hidden');
+}
+
+async function saveAccessCode() {
+    const newCode = document.getElementById('newAccessCode').value.trim();
+    if (!newCode) {
+        showModal('Error', 'Access code cannot be empty.');
+        return;
+    }
+    accessCode = newCode;
+
+    if (isCloudMode && supabaseClient) {
+        await supabaseClient.from('settings').upsert({ key: 'access_code', value: { code: newCode } });
+    } else {
+        localStorage.setItem('accessCode', newCode);
+    }
+
+    showModal('Success!', 'Access code updated to: ' + newCode + '\n\nShare this code with eligible voters only.');
 }
 
 async function stopVoting() {
@@ -708,7 +781,7 @@ function showVotingClosed() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  VOTE FUNCTION - Server-side duplicate prevention
+//  VOTE FUNCTION
 // ═══════════════════════════════════════════════════════════════
 async function vote(category, projectId) {
     if (!isVotingActive) { showModal('Voting Closed', 'Voting is currently closed.'); return; }
@@ -716,13 +789,11 @@ async function vote(category, projectId) {
 
     const voteKey = 'voted_' + currentVoter.university_id + '_' + category;
 
-    // Check localStorage first (fast)
     if (localStorage.getItem(voteKey)) {
         showModal('Already Voted', 'You have already voted in this category!');
         return;
     }
 
-    // Server-side duplicate check
     if (isCloudMode && supabaseClient) {
         try {
             const { data: existingVote } = await supabaseClient
@@ -734,12 +805,10 @@ async function vote(category, projectId) {
 
             if (existingVote) {
                 localStorage.setItem(voteKey, existingVote.project_id);
-                showModal('Already Voted', 'You have already voted in this category! (tracked on server)');
+                showModal('Already Voted', 'You have already voted in this category!');
                 return;
             }
-        } catch (e) {
-            // vote_records table might not exist, continue with local check
-        }
+        } catch (e) {}
     }
 
     localStorage.setItem(voteKey, projectId);
@@ -747,7 +816,6 @@ async function vote(category, projectId) {
     if (isCloudMode && supabaseClient) {
         const voteId = category + '_' + projectId;
 
-        // Record the vote (prevents duplicates)
         try {
             await supabaseClient.from('vote_records').insert([{
                 voter_id: currentVoter.university_id,
@@ -760,10 +828,8 @@ async function vote(category, projectId) {
                 showModal('Already Voted', 'This university ID has already voted in this category.');
                 return;
             }
-            // vote_records table might not exist, continue
         }
 
-        // Increment vote count
         const { data: existing } = await supabaseClient.from('votes').select('count').eq('id', voteId).single();
         const newCount = (existing ? existing.count : 0) + 1;
         const { error: voteError } = await supabaseClient.from('votes').upsert({ 
@@ -772,7 +838,6 @@ async function vote(category, projectId) {
         });
         if (voteError) { showModal('Error', 'Failed to record vote: ' + voteError.message); return; }
 
-        // Update voter record
         const updatedCategories = [...(currentVoter.voted_categories || []), category];
         await supabaseClient.from('voters').update({ voted_categories: updatedCategories }).eq('university_id', currentVoter.university_id);
         currentVoter.voted_categories = updatedCategories;
@@ -839,7 +904,7 @@ function switchTab(category) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  VOTER MANAGEMENT - With Vote Exclusion (FIXED)
+//  VOTER MANAGEMENT
 // ═══════════════════════════════════════════════════════════════
 async function showVotersList() {
     const container = document.getElementById('votersTable');
@@ -855,7 +920,6 @@ async function showVotersList() {
 
     voters.forEach((v, idx) => {
         const votedCount = v.voted_categories ? v.voted_categories.length : 0;
-        const voterVotes = voteRecords.filter(r => r.voter_id === v.university_id);
 
         html += '<div class="voter-row">' +
             '<div style="flex:1;min-width:200px">' +
@@ -863,7 +927,6 @@ async function showVotersList() {
                 '<small style="color:#666">ID: ' + (v.university_id || '') + ' | Email: ' + (v.email || '-') + '</small><br>' +
                 '<small style="color:#667eea;font-weight:600">Voted: ' + votedCount + '/4 categories</small>';
 
-        // Show voted categories as badges
         if (v.voted_categories && v.voted_categories.length > 0) {
             html += '<div style="margin-top:6px">';
             v.voted_categories.forEach(cat => {
@@ -875,11 +938,8 @@ async function showVotersList() {
 
         html += '</div>';
 
-        // Admin controls - ALWAYS show if admin is logged in and voter has voted
         if (isAdmin && votedCount > 0) {
             html += '<div class="voter-actions" style="margin-top:8px">';
-
-            // Show remove buttons for each voted category
             if (v.voted_categories && v.voted_categories.length > 0) {
                 v.voted_categories.forEach(cat => {
                     html += '<button class="btn btn-danger btn-sm" onclick="excludeVote(\'' + v.university_id + '\',\'' + cat + '\')">' +
@@ -887,7 +947,6 @@ async function showVotersList() {
                     '</button>';
                 });
             }
-
             html += '</div>';
         }
 
@@ -900,100 +959,62 @@ async function showVotersList() {
 }
 
 async function excludeVote(voterId, category) {
-    if (!confirm('Are you sure you want to remove this voter\'s vote for ' + (CATEGORY_NAMES[category] || category) + '?')) return;
+    if (!confirm('Remove vote for ' + (CATEGORY_NAMES[category] || category) + '?')) return;
 
-    // Find the project they voted for
     let projectId = null;
     const voterRecord = voteRecords.find(r => r.voter_id === voterId && r.category === category);
     if (voterRecord) projectId = voterRecord.project_id;
-
-    // Fallback: find from localStorage
-    if (!projectId) {
-        projectId = localStorage.getItem('voted_' + voterId + '_' + category);
-    }
+    if (!projectId) projectId = localStorage.getItem('voted_' + voterId + '_' + category);
 
     if (isCloudMode && supabaseClient) {
         try {
-            // 1. Delete vote record if table exists
-            try {
-                await supabaseClient.from('vote_records')
-                    .delete()
-                    .eq('voter_id', voterId)
-                    .eq('category', category);
-            } catch (e) { /* vote_records might not exist */ }
-
-            // 2. Decrement vote count
+            try { await supabaseClient.from('vote_records').delete().eq('voter_id', voterId).eq('category', category); } catch(e) {}
             if (projectId) {
                 const voteId = category + '_' + projectId;
                 const { data: existing } = await supabaseClient.from('votes').select('count').eq('id', voteId).single();
                 const newCount = Math.max(0, (existing ? existing.count : 0) - 1);
-                await supabaseClient.from('votes').upsert({
-                    id: voteId, category: category, project_id: projectId,
-                    count: newCount, last_updated: new Date().toISOString()
-                });
+                await supabaseClient.from('votes').upsert({ id: voteId, category: category, project_id: projectId, count: newCount, last_updated: new Date().toISOString() });
             }
-
-            // 3. Update voter's voted_categories
             const { data: voter } = await supabaseClient.from('voters').select('voted_categories').eq('university_id', voterId).single();
             if (voter && voter.voted_categories) {
                 let cats = typeof voter.voted_categories === 'string' ? JSON.parse(voter.voted_categories) : voter.voted_categories;
                 cats = (cats || []).filter(c => c !== category);
                 await supabaseClient.from('voters').update({ voted_categories: cats }).eq('university_id', voterId);
             }
-
-        } catch (e) {
-            console.error('Exclude error:', e);
-            showModal('Error', 'Failed to remove vote: ' + e.message);
-            return;
-        }
+        } catch (e) { console.error('Exclude error:', e); }
     }
 
-    // Always clear localStorage
     localStorage.removeItem('voted_' + voterId + '_' + category);
-
-    // Update local voter object
     const voter = voters.find(v => v.university_id === voterId);
-    if (voter && voter.voted_categories) {
-        voter.voted_categories = voter.voted_categories.filter(c => c !== category);
-    }
-
-    // Update vote records in memory
+    if (voter && voter.voted_categories) voter.voted_categories = voter.voted_categories.filter(c => c !== category);
     voteRecords = voteRecords.filter(r => !(r.voter_id === voterId && r.category === category));
-
-    // Decrement local vote count
     if (!isCloudMode && projectId && votes[category]) {
         votes[category][projectId] = Math.max(0, (votes[category][projectId] || 0) - 1);
         saveLocalData();
     }
 
-    showModal('Success!', 'Vote removed successfully.');
-    renderAll();
-    updateStats();
-    showVotersList();
+    showModal('Success!', 'Vote removed.');
+    renderAll(); updateStats(); showVotersList();
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  RESET ALL - Properly clears Supabase and reloads
+//  RESET ALL
 // ═══════════════════════════════════════════════════════════════
 async function resetAll() {
-    if (!confirm('⚠️ WARNING: This will delete ALL data permanently.\n\nThis includes:\n- All projects\n- All votes\n- All voters\n- All vote records\n\nAre you sure?')) return;
+    if (!confirm('⚠️ WARNING: Delete ALL data permanently?\n\nThis includes:\n- All projects\n- All votes\n- All voters\n- All vote records\n\nAre you sure?')) return;
 
-    showModal('Resetting...', 'Please wait while we clear all data...');
+    showModal('Resetting...', 'Please wait...');
 
     if (isCloudMode && supabaseClient) {
         try {
-            // Delete in order (child tables first)
             await supabaseClient.from('vote_records').delete().neq('id', 0);
             await supabaseClient.from('votes').delete().neq('id', '');
             await supabaseClient.from('projects').delete().neq('id', '');
             await supabaseClient.from('voters').delete().neq('university_id', '');
             await supabaseClient.from('settings').upsert({ key: 'voting', value: { active: true } });
-        } catch (e) {
-            console.error('Reset error:', e);
-        }
+        } catch (e) { console.error('Reset error:', e); }
     }
 
-    // Clear localStorage
     localStorage.removeItem('votingData');
     localStorage.removeItem('votingStatus');
     localStorage.removeItem('currentVoter');
@@ -1002,11 +1023,9 @@ async function resetAll() {
         if (key && key.startsWith('voted_')) localStorage.removeItem(key);
     }
 
-    // Reset state
     projects = {}; votes = {}; voters = []; currentVoter = null; voteRecords = []; isVotingActive = true;
     CATEGORIES.forEach(cat => { projects[cat] = []; votes[cat] = {}; });
 
-    // Reset UI
     document.getElementById('adminStatus').textContent = 'Voting Active';
     document.getElementById('adminStatus').className = 'status-badge status-active';
     document.getElementById('votingClosed').classList.add('hidden');
@@ -1016,16 +1035,245 @@ async function resetAll() {
     document.getElementById('votersListSection').classList.add('hidden');
     document.getElementById('setupSection').classList.add('hidden');
     document.getElementById('importSection').classList.add('hidden');
+    document.getElementById('accessCodeSection').classList.add('hidden');
     document.getElementById('registrationForm').classList.remove('hidden');
     document.getElementById('voterInfo').classList.add('hidden');
 
-    // Reload from cloud to sync empty state
-    if (isCloudMode && supabaseClient) {
-        await loadCloudData();
-    }
+    if (isCloudMode && supabaseClient) await loadCloudData();
 
     renderAll(); updateStats();
-    showModal('Reset Complete', 'All data has been cleared. The system is ready for new voters.');
+    showModal('Reset Complete', 'All data cleared. System is ready for new voters.');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RESULTS - Per Category + Per Course (Combined Gender)
+// ═══════════════════════════════════════════════════════════════
+function getRankSuffix(rank) {
+    if (rank === 1) return '1st';
+    if (rank === 2) return '2nd';
+    if (rank === 3) return '3rd';
+    return rank + 'th';
+}
+
+function getRankClass(rank) {
+    if (rank === 1) return 'winner';
+    if (rank === 2) return 'second';
+    if (rank === 3) return 'third';
+    return '';
+}
+
+function getRankBadgeClass(rank) {
+    if (rank === 1) return 'rank-1';
+    if (rank === 2) return 'rank-2';
+    if (rank === 3) return 'rank-3';
+    return 'rank-other';
+}
+
+function createWinnerCard(project, categoryName, voteCount, isCourse) {
+    const card = document.createElement('div');
+    card.className = 'winner-card';
+    let membersHtml = '';
+    (project.members || []).forEach(m => {
+        membersHtml += '<div class="member-row"><span class="member-name">' + (m.name || 'Unknown') + '</span><span class="member-id">' + (m.id || 'N/A') + '</span></div>';
+    });
+    card.innerHTML = 
+        '<div class="category-title">' + (isCourse ? '🏆 ' : '') + categoryName + (isCourse ? ' Overall Winner' : ' Winner') + '</div>' +
+        '<div class="project-title">' + project.name + '</div>' +
+        '<div class="instructor">👨‍🏫 Instructor: ' + (project.instructor || 'Not specified') + '</div>' +
+        '<div class="team-meta">' + project.id + ' | Section ' + project.section + ', Team ' + project.team + '</div>' +
+        '<div class="members-section"><h4>👥 Team Members</h4>' + membersHtml + '</div>' +
+        '<div class="vote-count"><span>🗳️ ' + voteCount + ' votes</span></div>';
+    return card;
+}
+
+function createResultItem(project, rank, voteCount, totalVotes) {
+    const pct = totalVotes > 0 ? (voteCount / totalVotes * 100).toFixed(1) : 0;
+    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+    const div = document.createElement('div');
+    div.className = 'result-item ' + getRankClass(rank);
+    div.innerHTML = 
+        '<div style="display:flex;align-items:center;flex:1">' +
+            '<span class="rank-badge ' + getRankBadgeClass(rank) + '">' + getRankSuffix(rank) + '</span>' +
+            '<div class="result-info">' +
+                '<div class="project-title">' + medal + ' ' + project.name + '</div>' +
+                '<div class="instructor">👨‍🏫 ' + (project.instructor || 'Not specified') + '</div>' +
+                '<div class="project-meta">' + project.id + ' | Section ' + project.section + ', Team ' + project.team + '</div>' +
+            '</div>' +
+        '</div>' +
+        '<div class="result-votes"><div class="vote-number">' + voteCount + '</div><div class="vote-label">' + pct + '%</div></div>';
+    return div;
+}
+
+function showResults() {
+    const courseContainer = document.getElementById('courseWinnersContainer');
+    const categoryContainer = document.getElementById('winnersContainer');
+    const fullResults = document.getElementById('fullResults');
+    courseContainer.innerHTML = '';
+    categoryContainer.innerHTML = '';
+    fullResults.innerHTML = '';
+
+    let resultsText = '🏆 IE 201/IE 202 PROJECTS VOTING RESULTS 🏆\n';
+    resultsText += 'Engineering Day Exhibition - FOE, KAU\n';
+    resultsText += 'Generated: ' + new Date().toLocaleString() + '\n';
+    resultsText += 'Total Votes: ' + getTotalVotes() + '\n';
+    resultsText += 'Registered Voters: ' + voters.length + '\n\n';
+
+    // ═══════════════════════════════════════════════════════════════
+    //  COURSE-LEVEL WINNERS (Combined Male + Female)
+    // ═══════════════════════════════════════════════════════════════
+    ['IE201', 'IE202'].forEach(course => {
+        const courseCats = CATEGORIES.filter(c => c.startsWith(course));
+        const allProjects = [];
+        const allVotes = {};
+
+        courseCats.forEach(cat => {
+            const catProjects = projects[cat] || [];
+            const catVotes = votes[cat] || {};
+            catProjects.forEach(p => {
+                if (p.name && p.name.trim() !== '') {
+                    allProjects.push(p);
+                    allVotes[p.id] = catVotes[p.id] || 0;
+                }
+            });
+        });
+
+        if (allProjects.length === 0) return;
+
+        const sorted = [...allProjects].sort((a, b) => (allVotes[b.id] || 0) - (allVotes[a.id] || 0));
+        const totalCourseVotes = Object.values(allVotes).reduce((a, b) => a + b, 0);
+
+        resultsText += '\n═══════════════════════════════════════════════════\n';
+        resultsText += '🏆 ' + COURSE_NAMES[course] + ' - TOP 3\n';
+        resultsText += '═══════════════════════════════════════════════════\n';
+
+        // Course winner card
+        const winner = sorted[0];
+        const winnerCard = createWinnerCard(winner, COURSE_NAMES[course], allVotes[winner.id] || 0, true);
+        courseContainer.appendChild(winnerCard);
+
+        resultsText += '\n🥇 1st PLACE: ' + winner.name + '\n';
+        resultsText += '   Instructor: ' + (winner.instructor || 'N/A') + '\n';
+        resultsText += '   ID: ' + winner.id + '\n';
+        resultsText += '   Votes: ' + (allVotes[winner.id] || 0) + '\n';
+        resultsText += '   Team Members:\n';
+        (winner.members || []).forEach(m => {
+            resultsText += '   - ' + (m.name || 'Unknown') + ' (' + (m.id || 'N/A') + ')\n';
+        });
+
+        // Top 3 for course
+        const courseDiv = document.createElement('div');
+        courseDiv.className = 'course-winner-section';
+        let courseHtml = '<h3>🏆 ' + COURSE_NAMES[course] + ' - Top 3 Winners</h3>';
+
+        sorted.slice(0, 3).forEach((p, idx) => {
+            const v = allVotes[p.id] || 0;
+            const pct = totalCourseVotes > 0 ? (v / totalCourseVotes * 100).toFixed(1) : 0;
+            const rank = idx + 1;
+            const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+
+            courseHtml += 
+                '<div class="result-item ' + getRankClass(rank) + '">' +
+                    '<div style="display:flex;align-items:center;flex:1">' +
+                        '<span class="rank-badge ' + getRankBadgeClass(rank) + '">' + getRankSuffix(rank) + '</span>' +
+                        '<div class="result-info">' +
+                            '<div class="project-title">' + medal + ' ' + p.name + '</div>' +
+                            '<div class="instructor">👨‍🏫 ' + (p.instructor || 'Not specified') + '</div>' +
+                            '<div class="project-meta">' + p.id + ' | Section ' + p.section + ', Team ' + p.team + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="result-votes"><div class="vote-number">' + v + '</div><div class="vote-label">' + pct + '%</div></div>' +
+                '</div>';
+
+            if (rank > 1) {
+                resultsText += '\n' + medal + ' ' + getRankSuffix(rank) + ': ' + p.name + ' (' + v + ' votes, ' + pct + '%)\n';
+                resultsText += '   Instructor: ' + (p.instructor || 'N/A') + '\n';
+            }
+        });
+
+        courseDiv.innerHTML = courseHtml;
+        courseContainer.appendChild(courseDiv);
+        resultsText += '\n';
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    //  CATEGORY-LEVEL WINNERS (Per Gender)
+    // ═══════════════════════════════════════════════════════════════
+    resultsText += '\n═══════════════════════════════════════════════════\n';
+    resultsText += '📊 PER-CATEGORY RESULTS\n';
+    resultsText += '═══════════════════════════════════════════════════\n';
+
+    CATEGORIES.forEach(cat => {
+        const catProjects = projects[cat] || [];
+        const catVotes = votes[cat] || {};
+        const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '');
+        if (activeProjects.length === 0) return;
+
+        const sorted = [...activeProjects].sort((a, b) => (catVotes[b.id] || 0) - (catVotes[a.id] || 0));
+        const winner = sorted[0];
+        const maxVotes = winner ? (catVotes[winner.id] || 0) : 0;
+
+        resultsText += '\n📊 ' + CATEGORY_NAMES[cat] + '\n';
+        resultsText += '───────────────────────────────────────────────────\n';
+
+        if (winner) {
+            const winnerCard = createWinnerCard(winner, CATEGORY_NAMES[cat], maxVotes, false);
+            categoryContainer.appendChild(winnerCard);
+
+            resultsText += '\n🥇 WINNER: ' + winner.name + '\n';
+            resultsText += '   Instructor: ' + (winner.instructor || 'N/A') + '\n';
+            resultsText += '   ID: ' + winner.id + '\n';
+            resultsText += '   Votes: ' + maxVotes + '\n';
+            resultsText += '   Team Members:\n';
+            (winner.members || []).forEach(m => {
+                resultsText += '   - ' + (m.name || 'Unknown') + ' (' + (m.id || 'N/A') + ')\n';
+            });
+        }
+
+        const resultDiv = document.createElement('div');
+        resultDiv.className = 'result-category';
+        const totalCatVotes = Object.values(catVotes).reduce((a, b) => a + b, 0);
+        let resultsHtml = '<h4>📋 ' + CATEGORY_NAMES[cat] + ' - Full Rankings</h4>';
+
+        sorted.forEach((p, idx) => {
+            const v = catVotes[p.id] || 0;
+            const pct = totalCatVotes > 0 ? (v / totalCatVotes * 100).toFixed(1) : 0;
+            const rank = idx + 1;
+            const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+
+            resultsHtml += 
+                '<div class="result-item ' + getRankClass(rank) + '">' +
+                    '<div style="display:flex;align-items:center;flex:1">' +
+                        '<span class="rank-badge ' + getRankBadgeClass(rank) + '">' + getRankSuffix(rank) + '</span>' +
+                        '<div class="result-info">' +
+                            '<div class="project-title">' + medal + ' ' + p.name + '</div>' +
+                            '<div class="instructor">👨‍🏫 ' + (p.instructor || 'Not specified') + '</div>' +
+                            '<div class="project-meta">' + p.id + ' | Section ' + p.section + ', Team ' + p.team + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="result-votes"><div class="vote-number">' + v + '</div><div class="vote-label">' + pct + '%</div></div>' +
+                '</div>';
+
+            if (rank > 1) {
+                resultsText += medal + ' ' + getRankSuffix(rank) + ': ' + p.name + ' (' + v + ' votes, ' + pct + '%)\n';
+                resultsText += '   Instructor: ' + (p.instructor || 'N/A') + '\n';
+            }
+        });
+
+        resultDiv.innerHTML = resultsHtml;
+        fullResults.appendChild(resultDiv);
+    });
+
+    document.getElementById('resultsText').value = resultsText;
+    document.getElementById('resultsSection').classList.add('active');
+    document.getElementById('votingClosed').classList.add('hidden');
+    document.getElementById('categoryTabs').classList.add('hidden');
+    document.getElementById('votingSections').classList.add('hidden');
+}
+
+function getTotalVotes() {
+    let total = 0;
+    CATEGORIES.forEach(cat => { total += Object.values(votes[cat] || {}).reduce((a, b) => a + b, 0); });
+    return total;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1079,8 +1327,7 @@ function handleCSVUpload(input) {
 
     const reader = new FileReader();
     reader.onload = function(e) {
-        const text = e.target.result;
-        parseCSV(text);
+        parseCSV(e.target.result);
     };
     reader.readAsText(file);
 }
@@ -1104,16 +1351,13 @@ function parseCSV(text) {
 
         if (!row.name || !row.category) continue;
 
-        // Parse members: "Name:ID|Name:ID|Name:ID"
         let members = [{name: 'Unknown', id: 'N/A'}];
         if (row.members && row.members.trim()) {
             const memberPairs = row.members.split('|');
             const parsedMembers = [];
             memberPairs.forEach(pair => {
                 const parts = pair.split(':');
-                if (parts.length >= 2) {
-                    parsedMembers.push({ name: parts[0].trim(), id: parts[1].trim() });
-                }
+                if (parts.length >= 2) parsedMembers.push({ name: parts[0].trim(), id: parts[1].trim() });
             });
             if (parsedMembers.length > 0) members = parsedMembers;
         }
@@ -1131,7 +1375,6 @@ function parseCSV(text) {
         });
     }
 
-    // Show preview
     const previewDiv = document.getElementById('csvPreview');
     let previewHtml = '<h4 style="margin-bottom:15px">📋 Preview (' + csvData.length + ' projects)</h4>';
     previewHtml += '<div style="max-height:300px;overflow-y:auto;border:1px solid #ddd;border-radius:8px">';
@@ -1361,125 +1604,6 @@ async function saveSetup() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  RESULTS AND RANKING
-// ═══════════════════════════════════════════════════════════════
-function getRankSuffix(rank) {
-    if (rank === 1) return '1st';
-    if (rank === 2) return '2nd';
-    if (rank === 3) return '3rd';
-    return rank + 'th';
-}
-
-function getRankClass(rank) {
-    if (rank === 1) return 'winner';
-    if (rank === 2) return 'second';
-    if (rank === 3) return 'third';
-    return '';
-}
-
-function getRankBadgeClass(rank) {
-    if (rank === 1) return 'rank-1';
-    if (rank === 2) return 'rank-2';
-    if (rank === 3) return 'rank-3';
-    return 'rank-other';
-}
-
-function showResults() {
-    const container = document.getElementById('winnersContainer');
-    const fullResults = document.getElementById('fullResults');
-    container.innerHTML = '';
-    fullResults.innerHTML = '';
-
-    let resultsText = '🏆 IE201/202 Projects VOTING RESULTS 🏆\n';
-    resultsText += 'Generated: ' + new Date().toLocaleString() + '\n';
-    resultsText += 'Total Votes: ' + getTotalVotes() + '\n';
-    resultsText += 'Registered Voters: ' + voters.length + '\n\n';
-
-    CATEGORIES.forEach(cat => {
-        const catProjects = projects[cat] || [];
-        const catVotes = votes[cat] || {};
-        const activeProjects = catProjects.filter(p => p.name && p.name.trim() !== '');
-        if (activeProjects.length === 0) return;
-
-        const sorted = [...activeProjects].sort((a, b) => (catVotes[b.id] || 0) - (catVotes[a.id] || 0));
-        const winner = sorted[0];
-        const maxVotes = winner ? (catVotes[winner.id] || 0) : 0;
-
-        resultsText += '\n📊 ' + CATEGORY_NAMES[cat] + '\n';
-        resultsText += '='.repeat(50) + '\n';
-
-        if (winner) {
-            const winnerCard = document.createElement('div');
-            winnerCard.className = 'winner-card';
-            let membersHtml = '';
-            (winner.members || []).forEach(m => {
-                membersHtml += '<div class="member-row"><span class="member-name">' + (m.name || 'Unknown') + '</span><span class="member-id">' + (m.id || 'N/A') + '</span></div>';
-            });
-            winnerCard.innerHTML = 
-                '<div class="category-title">' + CATEGORY_NAMES[cat] + ' Winner</div>' +
-                '<div class="project-title">' + winner.name + '</div>' +
-                '<div class="instructor">👨‍🏫 Instructor: ' + (winner.instructor || 'Not specified') + '</div>' +
-                '<div class="team-meta">' + winner.id + ' | Section ' + winner.section + ', Team ' + winner.team + '</div>' +
-                '<div class="members-section"><h4>👥 Team Members</h4>' + membersHtml + '</div>' +
-                '<div class="vote-count"><span>🗳️ ' + maxVotes + ' votes</span></div>';
-            container.appendChild(winnerCard);
-
-            resultsText += '🥇 WINNER: ' + winner.name + '\n';
-            resultsText += '   Instructor: ' + (winner.instructor || 'N/A') + '\n';
-            resultsText += '   ID: ' + winner.id + '\n';
-            resultsText += '   Votes: ' + maxVotes + '\n';
-            resultsText += '   Team Members:\n';
-            (winner.members || []).forEach(m => {
-                resultsText += '   - ' + (m.name || 'Unknown') + ' (' + (m.id || 'N/A') + ')\n';
-            });
-            resultsText += '\n';
-        }
-
-        const resultDiv = document.createElement('div');
-        resultDiv.className = 'result-category';
-        const totalCatVotes = Object.values(catVotes).reduce((a, b) => a + b, 0);
-        let resultsHtml = '<h4>📋 ' + CATEGORY_NAMES[cat] + ' - Full Rankings</h4>';
-
-        sorted.forEach((p, idx) => {
-            const v = catVotes[p.id] || 0;
-            const pct = totalCatVotes > 0 ? (v / totalCatVotes * 100).toFixed(1) : 0;
-            const rank = idx + 1;
-            const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
-            resultsHtml += 
-                '<div class="result-item ' + getRankClass(rank) + '">' +
-                    '<div style="display:flex;align-items:center;flex:1">' +
-                        '<span class="rank-badge ' + getRankBadgeClass(rank) + '">' + getRankSuffix(rank) + '</span>' +
-                        '<div class="result-info">' +
-                            '<div class="project-title">' + medal + ' ' + p.name + '</div>' +
-                            '<div class="instructor">👨‍🏫 ' + (p.instructor || 'Not specified') + '</div>' +
-                            '<div class="project-meta">' + p.id + ' | Section ' + p.section + ', Team ' + p.team + '</div>' +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="result-votes"><div class="vote-number">' + v + '</div><div class="vote-label">' + pct + '%</div></div>' +
-                '</div>';
-            if (rank > 1) {
-                resultsText += medal + ' ' + getRankSuffix(rank) + ': ' + p.name + ' (' + v + ' votes, ' + pct + '%)\n';
-                resultsText += '   Instructor: ' + (p.instructor || 'N/A') + '\n';
-            }
-        });
-        resultDiv.innerHTML = resultsHtml;
-        fullResults.appendChild(resultDiv);
-    });
-
-    document.getElementById('resultsText').value = resultsText;
-    document.getElementById('resultsSection').classList.add('active');
-    document.getElementById('votingClosed').classList.add('hidden');
-    document.getElementById('categoryTabs').classList.add('hidden');
-    document.getElementById('votingSections').classList.add('hidden');
-}
-
-function getTotalVotes() {
-    let total = 0;
-    CATEGORIES.forEach(cat => { total += Object.values(votes[cat] || {}).reduce((a, b) => a + b, 0); });
-    return total;
-}
-
-// ═══════════════════════════════════════════════════════════════
 //  SHARING
 // ═══════════════════════════════════════════════════════════════
 function shareTelegram() {
@@ -1489,7 +1613,7 @@ function shareWhatsApp() {
     window.open('https://web.whatsapp.com/send?text=' + encodeURIComponent(document.getElementById('resultsText').value), '_blank');
 }
 function shareEmail() {
-    window.location.href = 'mailto:?subject=' + encodeURIComponent('IE201/202 Projects Voting Results') + '&body=' + encodeURIComponent(document.getElementById('resultsText').value);
+    window.location.href = 'mailto:?subject=' + encodeURIComponent('IE 201/IE 202 Voting Results - Engineering Day') + '&body=' + encodeURIComponent(document.getElementById('resultsText').value);
 }
 function copyResults() {
     const t = document.getElementById('resultsText');
